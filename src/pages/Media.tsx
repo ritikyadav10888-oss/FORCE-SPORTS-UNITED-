@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
 import { Link, useLocation } from "react-router-dom";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 import mediaImg from "@/assets/media-production.jpg";
 import { Monitor, Mic, Video, Camera, Share2, Film, ArrowRight, Download } from "lucide-react";
 import galleryImages from "@/data/gallery.json";
@@ -11,6 +13,7 @@ const Media = () => {
   const location = useLocation();
   const [selectedAlbum, setSelectedAlbum] = useState<string | null>(location.state?.openAlbum || null);
   const [visibleCount, setVisibleCount] = useState(24);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const loadMore = () => {
     setVisibleCount(prev => Math.min(prev + 24, galleryImages.length));
@@ -67,40 +70,64 @@ const Media = () => {
             <div className="animate-fade-in-up">
               <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
                 <h3 className="font-heading text-2xl font-bold text-center sm:text-left">{selectedAlbum}</h3>
-                <div className="flex gap-4">
-                  <button
-                    onClick={async () => {
-                      if (window.confirm(`Are you sure you want to download all ${galleryImages.length} images? Your browser may ask for permission to download multiple files.`)) {
-                        for (let i = 0; i < galleryImages.length; i++) {
-                          const link = document.createElement("a");
-                          link.href = galleryImages[i];
-                          link.download = `${selectedAlbum}-image-${i + 1}.jpg`;
-                          document.body.appendChild(link);
-                          link.click();
-                          document.body.removeChild(link);
-                          await new Promise(resolve => setTimeout(resolve, 300));
+                <div className="flex flex-col items-center sm:items-end gap-2">
+                  <div className="flex gap-4">
+                    <button
+                      onClick={async () => {
+                        if (window.confirm(`Are you sure you want to download all ${galleryImages.length} images as a ZIP file?`)) {
+                          setIsDownloading(true);
+                          try {
+                            const zip = new JSZip();
+                            
+                            for (let i = 0; i < galleryImages.length; i++) {
+                              const response = await fetch(galleryImages[i]);
+                              const blob = await response.blob();
+                              // Safely extract extension and remove any query parameters
+                              let ext = galleryImages[i].split('.').pop() || 'jpg';
+                              ext = ext.split('?')[0];
+                              zip.file(`${selectedAlbum || 'Album'}-image-${i + 1}.${ext}`, blob);
+                            }
+                            
+                            const content = await zip.generateAsync({ type: "blob" });
+                            saveAs(content, `${selectedAlbum || 'Force-Sports-Album'}.zip`);
+                          } catch (error) {
+                            console.error("Error creating zip:", error);
+                            alert("Failed to download images. Please try again.");
+                          } finally {
+                            setIsDownloading(false);
+                          }
                         }
-                      }
-                    }}
-                    className="px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:opacity-90 transition-opacity font-bold uppercase tracking-wider flex items-center gap-2 shrink-0"
-                  >
-                    <Download size={16} /> Download All
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedAlbum(null);
-                      setVisibleCount(24);
-                    }}
-                    className="px-4 py-2 border border-border rounded text-sm hover:border-primary transition-colors font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground shrink-0"
-                  >
-                    Back to Albums
-                  </button>
+                      }}
+                      disabled={isDownloading}
+                      className={`px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:opacity-90 transition-opacity font-bold uppercase tracking-wider flex items-center gap-2 shrink-0 ${isDownloading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    >
+                      <Download size={16} /> {isDownloading ? 'Zipping...' : 'Download All'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedAlbum(null);
+                        setVisibleCount(24);
+                      }}
+                      className="px-4 py-2 border border-border rounded text-sm hover:border-primary transition-colors font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground shrink-0"
+                    >
+                      Back to Albums
+                    </button>
+                  </div>
+                  {isDownloading && (
+                    <p className="text-xs text-primary font-heading tracking-widest uppercase animate-pulse">
+                      Please wait, zipping may take a few minutes...
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {galleryImages.slice(0, visibleCount).map((src, i) => (
-                  <div key={i} className="group relative aspect-square overflow-hidden rounded-lg bg-secondary border border-border">
+                  <div 
+                    key={i} 
+                    className="group relative aspect-square overflow-hidden rounded-lg bg-secondary border border-border animate-fade-in-up"
+                    style={{ animationDelay: `${(i % 24) * 0.05}s` }}
+                  >
                     <img
                       src={src}
                       alt={`Gallery image ${i + 1}`}
