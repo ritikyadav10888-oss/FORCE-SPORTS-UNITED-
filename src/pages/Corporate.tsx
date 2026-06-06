@@ -84,18 +84,7 @@ const Corporate = () => (
     </section>
 
     {/* CTA */}
-    <section className="bg-gradient-brand section-padding text-center">
-      <div className="max-w-3xl mx-auto">
-        <Briefcase size={40} className="text-primary-foreground mx-auto mb-4" />
-        <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-          Ready to Energize Your Workforce?
-        </h2>
-        <p className="text-primary-foreground/80 mb-8">Let's design a corporate sports experience your team will never forget.</p>
-        <Link to="/quote" className="inline-flex items-center gap-2 bg-background px-8 py-4 rounded font-heading text-sm tracking-wider uppercase text-foreground hover:bg-background/90 transition-colors">
-          Get a Quote <ArrowRight size={16} />
-        </Link>
-      </div>
-    </section>
+
   </Layout>
 );
 

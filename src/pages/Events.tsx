@@ -65,7 +65,7 @@ const Events = () => {
 
   return (
     <Layout>
-      <section className="section-padding pt-24 pb-12">
+      <section className="bg-secondary section-padding pt-24 pb-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center animate-fade-in-up mb-16">
             <p className="font-heading text-primary text-sm tracking-[0.3em] uppercase mb-3">PERFORMANCE PORTFOLIO</p>

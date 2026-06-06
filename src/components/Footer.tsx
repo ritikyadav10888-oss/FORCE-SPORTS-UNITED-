@@ -15,6 +15,8 @@ const footerSections = [
     title: "SOLUTIONS",
     links: [
       { to: "/corporate", label: "Corporate Solutions" },
+      { to: "/community", label: "Community Sports" },
+      { to: "/government", label: "Government Events" },
       { to: "/media", label: "Media & Production" },
     ],
   },
@@ -33,7 +35,7 @@ const Footer = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-  <footer className="bg-secondary border-t border-border">
+  <footer className="bg-background border-t border-border">
     <div className="max-w-7xl mx-auto px-6 py-16">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>

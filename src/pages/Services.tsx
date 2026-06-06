@@ -65,7 +65,7 @@ const features = [
 
 const Services = () => (
   <Layout>
-    <section className="section-padding pt-24">
+    <section className="bg-secondary section-padding pt-24">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16 animate-fade-in-up">
           <p className="font-heading text-primary text-sm tracking-[0.3em] uppercase mb-3">our sporting spirit</p>
