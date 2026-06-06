@@ -31,13 +31,11 @@ const Government = () => (
       <div className="absolute inset-0 bg-background/80" />
       <div className="relative z-10 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <div className="mb-6 inline-flex items-center justify-center p-4 rounded-xl border border-[#B8902E] bg-background/50">
-            <Landmark size={32} className="text-[#F2C94C]" />
-          </div>
+          <p className="font-heading text-primary text-sm tracking-[0.3em] uppercase mb-3">For Government</p>
           <h1 className="font-heading text-4xl md:text-6xl font-bold mb-2 uppercase">
             Government
           </h1>
-          <p className="font-heading text-[#F2C94C] text-sm tracking-[0.2em] uppercase mb-6">
+          <p className="font-heading text-primary text-sm tracking-[0.2em] uppercase mb-6">
             Civic - Public - Institutional
           </p>
           <p className="text-muted-foreground leading-relaxed mb-8 text-lg">

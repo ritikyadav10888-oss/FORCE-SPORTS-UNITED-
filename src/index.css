@@ -85,6 +85,11 @@
     animation: logo-coin-periodic 4.5s ease-in-out infinite;
     transform-style: preserve-3d;
   }
+
+  .animate-coin-flip {
+    animation: coin-spin 2s linear infinite;
+    transform-style: preserve-3d;
+  }
 }
 
 @keyframes logo-coin-periodic {
@@ -100,6 +105,15 @@
 
   94%,
   100% {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes coin-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
     transform: rotateY(360deg);
   }
 }

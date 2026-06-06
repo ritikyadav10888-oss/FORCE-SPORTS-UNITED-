@@ -1,82 +1,7 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import { Briefcase, MapPin, Clock, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-const openings = [
-  {
-    title: "Tournament Director",
-    location: "Mumbai",
-    type: "Full-time",
-    summary: "Oversee the entire tournament lifecycle, manage stakeholders, and ensure seamless execution of all event operations.",
-  },
-  {
-    title: "Event Operations Manager",
-    location: "Mumbai",
-    type: "Full-time",
-    summary: "Lead on-ground tournament execution, vendor coordination, and match-day operations.",
-  },
-  {
-    title: "Logistics & Ground Coordinator",
-    location: "On-site",
-    type: "Contract",
-    summary: "Manage equipment transport, ground preparation, seating arrangements, and facility readiness.",
-  },
-  {
-    title: "Match Referee & Umpire Coordinator",
-    location: "Mumbai",
-    type: "Contract",
-    summary: "Recruit, schedule, and manage certified officials to ensure fair play and adherence to tournament rules.",
-  },
-  {
-    title: "Live Stream & Broadcast Technician",
-    location: "Remote / On-site",
-    type: "Contract",
-    summary: "Multicamera setup, digital overlays, scoring sync, and broadcast delivery for sports events.",
-  },
-  {
-    title: "Social Media & Content Creator",
-    location: "Mumbai / Remote",
-    type: "Part-time",
-    summary: "Capture on-ground highlights, create reels, and manage digital engagement during tournaments.",
-  },
-  {
-    title: "Sports Marketing Executive",
-    location: "Mumbai",
-    type: "Full-time",
-    summary: "Brand partnerships, sponsor pitch decks, and commercial campaigns for leagues and corporate events.",
-  },
-  {
-    title: "Hospitality & Vendor Manager",
-    location: "Mumbai",
-    type: "Full-time",
-    summary: "Coordinate food & beverage, VIP lounges, trophies/medals procurement, and player accommodations.",
-  },
-  {
-    title: "Medical & Safety Officer",
-    location: "On-site",
-    type: "Contract",
-    summary: "Ensure compliance with safety protocols, provide first-aid response, and coordinate with local emergency services.",
-  },
-  {
-    title: "Sports Data Analyst",
-    location: "Mumbai",
-    type: "Full-time",
-    summary: "Analyze player statistics, team performance data, and match trends to provide actionable insights for leagues and broadcasters.",
-  },
-  {
-    title: "Client Relationship Executive",
-    location: "Mumbai",
-    type: "Full-time",
-    summary: "Act as the primary point of contact for corporate clients, ensuring their event requirements and expectations are exceeded.",
-  },
-  {
-    title: "Finance & Accounts Manager",
-    location: "Mumbai / Remote",
-    type: "Full-time",
-    summary: "Oversee tournament budgets, vendor payments, financial reporting, and compliance for all sporting events.",
-  }
-];
 
 const Careers = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,31 +33,8 @@ const Careers = () => {
               Careers at <span className="text-gradient">Force Sports United</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-              Help us deliver premium sports events across India. Open roles in operations, production, and marketing.
+              Help us deliver premium sports events across India. Join our team of passionate sports professionals.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-            {openings.map((role) => (
-              <div key={role.title} className="bg-card border border-border p-6 rounded-lg flex flex-col h-full hover:border-primary transition-colors group">
-                <div className="p-3 bg-secondary rounded-lg w-fit mb-4 group-hover:bg-primary/10 transition-colors">
-                  <Briefcase className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-heading text-xl font-bold mb-3 group-hover:text-primary transition-colors">{role.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed flex-grow mb-6">{role.summary}</p>
-                
-                <div className="flex flex-wrap gap-4 mt-auto pt-4 border-t border-border">
-                  <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    <MapPin size={14} className="text-primary" />
-                    {role.location}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    <Clock size={14} className="text-primary" />
-                    {role.type}
-                  </span>
-                </div>
-              </div>
-            ))}
           </div>
 
           {/* Apply Form */}
@@ -164,14 +66,44 @@ const Careers = () => {
                   <label htmlFor="role" className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Role Applied For *</label>
                   <select required defaultValue="" id="role" name="role" className="w-full bg-background border border-border rounded-md px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors appearance-none">
                     <option value="" disabled className="text-muted-foreground">Select a role</option>
-                    {openings.map((role) => (
-                      <option key={role.title} value={role.title}>{role.title}</option>
-                    ))}
+                    <option value="Tournament Director">Tournament Director</option>
+                    <option value="Event Operations Manager">Event Operations Manager</option>
+                    <option value="Logistics & Ground Coordinator">Logistics & Ground Coordinator</option>
+                    <option value="Match Referee & Umpire Coordinator">Match Referee & Umpire Coordinator</option>
+                    <option value="Live Stream & Broadcast Technician">Live Stream & Broadcast Technician</option>
+                    <option value="Social Media & Content Creator">Social Media & Content Creator</option>
+                    <option value="Sports Marketing Executive">Sports Marketing Executive</option>
+                    <option value="Hospitality & Vendor Manager">Hospitality & Vendor Manager</option>
+                    <option value="Medical & Safety Officer">Medical & Safety Officer</option>
+                    <option value="Sports Data Analyst">Sports Data Analyst</option>
+                    <option value="Client Relationship Executive">Client Relationship Executive</option>
+                    <option value="Finance & Accounts Manager">Finance & Accounts Manager</option>
                     <option value="Open Application / Other">Open Application / Other</option>
                   </select>
                 </div>
+                <div className="space-y-2">
+                  <label htmlFor="location" className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Current Location</label>
+                  <input type="text" id="location" name="location" className="w-full bg-background border border-border rounded-md px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" placeholder="e.g. Mumbai, Maharashtra" />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="experience" className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Years of Experience</label>
+                  <input type="text" id="experience" name="experience" className="w-full bg-background border border-border rounded-md px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" placeholder="e.g. 3 Years" />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="linkedin" className="text-xs font-bold uppercase text-muted-foreground tracking-wider">LinkedIn Profile</label>
+                  <input type="url" id="linkedin" name="linkedin" className="w-full bg-background border border-border rounded-md px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" placeholder="https://linkedin.com/in/johndoe" />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="portfolio" className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Portfolio / Website</label>
+                  <input type="url" id="portfolio" name="portfolio" className="w-full bg-background border border-border rounded-md px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" placeholder="https://yourwebsite.com" />
+                </div>
               </div>
               
+              <div className="space-y-2">
+                <label htmlFor="message" className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Cover Letter / Why do you want to join us?</label>
+                <textarea id="message" name="message" rows={4} className="w-full bg-background border border-border rounded-md px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors resize-y" placeholder="Tell us a little about yourself and your passion for sports..." />
+              </div>
+
               <div className="space-y-2">
                 <label htmlFor="resume" className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Upload Resume (PDF/DOC, Max 5MB) *</label>
                 <input required type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" className="w-full bg-background border border-border rounded-md px-4 py-2 text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-primary/20 file:text-primary hover:file:bg-primary/30 cursor-pointer transition-colors" />

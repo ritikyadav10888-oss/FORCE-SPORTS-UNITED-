@@ -117,13 +117,8 @@ const About = () => (
           {[
             { name: "FORCE SPORTS AND WEARS INDIA", logo: "/force group of company/force sport and wears india.png", desc: "CUSTOM SPORTSWEAR MANUFACTURING", url: "https://forcesportsindia.com" },
             { name: "FORCE PLAYING FIELD INDIA PRIVATE LIMITED", logo: "/force group of company/force playing field logo .png", desc: "SPORTS INFRASTRUCTURE" },
-            { name: "FORCE 1 LIVE", logo: "/force group of company/force1live .png", desc: "SPORTS MEDIA & BROADCASTING" },
+            { name: "FORCE 1 LIVE", logo: "/force group of company/force1live .png", desc: "SPORTS MEDIA & BROADCASTING", url: "https://www.youtube.com/@FORCE1LIVE" },
             { name: "FORCE SPORTS INFRA", logo: "/force group of company/force sport infra .png", desc: "INFRASTRUCTURE & DEVELOPMENT" },
-            { name: "SPORTEX INDIA", logo: "/force group of company/Sportex india.png", desc: "FABRICS & MANUFACTURING UNIT" },
-            { name: "FITTOOOS", logo: "/force group of company/fittooos.png", desc: "LIFESTYLE & STREETWEAR" },
-            { name: "FIT SUTRA", logo: "/force group of company/fit sutra .png", desc: "FITNESS & WELLNESS" },
-            { name: "SHATAK", logo: "/force group of company/shatak logo.png", desc: "PREMIUM ACTIVEWEAR" },
-            { name: "JABRAAT", logo: "/force group of company/jabraat logo.png", desc: "PRO TEAM KITS" },
             { name: "FORCE SPORTS UNITED", logo: "/force group of company/force sports united logo.png", desc: "SPORTS EVENT MANAGEMENT COMPANY" }
           ].map((company) => {
             const CardWrapper = company.url ? 'a' : 'div';
