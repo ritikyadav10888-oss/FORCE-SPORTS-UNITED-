@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import mediaImg from "@/assets/media-production.jpg";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
+import { useToast } from "@/hooks/use-toast";
 
 const ALBUMS = [
   { 
@@ -71,6 +72,7 @@ function AlbumCover({ folder, alt, specificFiles }: { folder: string; alt: strin
 }
 
 export default function MediaGallery() {
+  const { toast } = useToast();
   const searchParams = useSearchParams();
   const initialAlbumName = searchParams.get("album");
   
@@ -189,11 +191,18 @@ export default function MediaGallery() {
       const writable = await fileHandle.createWritable();
       const response = await fetch(`${url}?download=true`, { cache: 'no-store' });
       await response.body?.pipeTo(writable);
-      alert(`${isVideo ? 'Video' : 'Photo'} downloaded successfully!`);
+      toast({
+        title: "Download Complete",
+        description: `${isVideo ? 'Video' : 'Photo'} downloaded successfully!`,
+      });
     } catch (error: any) {
       if (error.name !== 'AbortError') {
         console.error("Error downloading file:", error);
-        alert("Failed to download file. The connection might have dropped.");
+        toast({
+          variant: "destructive",
+          title: "Download Failed",
+          description: "Failed to download file. The connection might have dropped.",
+        });
       }
     }
   };
@@ -230,7 +239,11 @@ export default function MediaGallery() {
                       
                       // Fallback for browsers that don't support showSaveFilePicker
                       if (!('showSaveFilePicker' in window)) {
-                        alert("Your browser does not support streaming massive ZIPs directly to your hard drive. Please use Google Chrome or Microsoft Edge to download all videos as a ZIP.");
+                        toast({
+                          variant: "destructive",
+                          title: "Browser Not Supported",
+                          description: "Your browser does not support streaming massive ZIPs directly to your hard drive. Please use Google Chrome or Microsoft Edge to download all videos as a ZIP.",
+                        });
                         setIsDownloading(false);
                         return;
                       }
@@ -267,12 +280,19 @@ export default function MediaGallery() {
                       // Stream the zip directly to the hard drive
                       await downloadZip(getFiles()).body.pipeTo(writable, { signal: abortControllerRef.current.signal });
                       
-                      alert("Download complete! All files have been successfully zipped to your computer.");
+                      toast({
+                        title: "Download Complete",
+                        description: "All files have been successfully zipped to your computer.",
+                      });
                     } catch (error: any) {
                       // Ignore DOMException if user cancels the save dialog or aborts
                       if (error.name !== 'AbortError') {
                         console.error("Error streaming zip:", error);
-                        alert("Failed to download files. The connection might have dropped.");
+                        toast({
+                          variant: "destructive",
+                          title: "Download Failed",
+                          description: "The connection might have dropped. Please try again.",
+                        });
                       }
                     } finally {
                       setIsDownloading(false);
@@ -334,20 +354,21 @@ export default function MediaGallery() {
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       </div>
-                      <div className="p-3 bg-card border-t border-border flex gap-2">
+                      <div className="p-2 sm:p-3 bg-card border-t border-border flex gap-1.5 sm:gap-2">
                         <button
                           onClick={() => window.open((src as any).src || src, '_blank')}
-                          className="flex-1 bg-secondary text-foreground py-2 rounded text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
+                          className="flex-1 bg-secondary text-foreground py-2 px-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors min-w-0"
                           title="View Image in New Tab"
                         >
-                          View
+                          <span className="truncate">View</span>
                         </button>
                         <button
                           onClick={(e) => handleSingleDownload((src as any).src || src, e)}
-                          className="flex-1 bg-primary text-primary-foreground py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                          className="flex-[1.2] bg-primary text-primary-foreground py-2 px-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 hover:opacity-90 transition-opacity min-w-0"
                           title="Download Image"
                         >
-                          <Download size={14} /> Download
+                          <Download size={14} className="shrink-0" /> 
+                          <span className="truncate">Download</span>
                         </button>
                       </div>
                     </div>
@@ -379,27 +400,28 @@ export default function MediaGallery() {
                     <div key={`r2-${i}`} className="group overflow-hidden rounded-lg bg-black border border-border flex flex-col">
                       <div className="relative aspect-video w-full">
                         <video 
-                          src={src} 
+                          src={`${src}#t=0.5`}
                           controls 
                           className="w-full h-full object-contain bg-black"
                           preload="metadata"
                           playsInline
                         />
                       </div>
-                      <div className="p-3 bg-card border-t border-border flex gap-2">
+                      <div className="p-2 sm:p-3 bg-card border-t border-border flex gap-1.5 sm:gap-2">
                         <button
                           onClick={() => window.open(src, '_blank')}
-                          className="flex-1 bg-secondary text-foreground py-2 rounded text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
+                          className="flex-1 bg-secondary text-foreground py-2 px-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors min-w-0"
                           title="View Video in New Tab"
                         >
-                          View
+                          <span className="truncate">View</span>
                         </button>
                         <button 
                           onClick={(e) => handleSingleDownload(src, e)}
-                          className="flex-1 bg-primary text-primary-foreground py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 hover:opacity-90 transition-opacity" 
+                          className="flex-[1.2] bg-primary text-primary-foreground py-2 px-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 hover:opacity-90 transition-opacity min-w-0" 
                           title="Download Video"
                         >
-                          <Download size={14} /> Download
+                          <Download size={14} className="shrink-0" /> 
+                          <span className="truncate">Download</span>
                         </button>
                       </div>
                     </div>
