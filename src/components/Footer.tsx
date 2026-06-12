@@ -1,4 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Mail, Phone, MapPin, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 
 const footerSections = [
@@ -31,8 +34,8 @@ const footerSections = [
 ];
 
 const Footer = () => {
-  const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
+  const pathname = usePathname();
+  const isActive = (path: string) => pathname === path;
 
   return (
   <footer className="bg-background border-t border-border">
@@ -64,7 +67,7 @@ const Footer = () => {
               {section.links.map((link) => (
                 <Link
                   key={link.to}
-                  to={link.to}
+                  href={link.to}
                   className={`block text-sm transition-colors ${
                     isActive(link.to) ? "text-primary font-medium" : "text-muted-foreground hover:text-primary"
                   }`}
@@ -81,8 +84,8 @@ const Footer = () => {
           © {new Date().getFullYear()} Force Sports United. All rights reserved.
         </p>
         <div className="flex gap-6 text-xs text-muted-foreground">
-          <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-          <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
         </div>
       </div>
     </div>

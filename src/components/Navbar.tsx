@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
 
 const navLinks = [
@@ -22,14 +25,14 @@ const moreLinks = [
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const location = useLocation();
+  const pathname = usePathname();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => pathname === path;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 lg:px-6 py-3">
-        <Link to="/" className="flex items-center gap-2 font-heading text-2xl font-bold tracking-wider shrink-0" style={{ perspective: "1000px" }}>
+        <Link href="/" className="flex items-center gap-2 font-heading text-2xl font-bold tracking-wider shrink-0" style={{ perspective: "1000px" }}>
           <img src="/logo.png" alt="Force Sports United Logo" className="h-8 w-8 rounded-full object-cover shadow-sm animate-coin border-2 border-[#F2C94C]" />
           <span className="bg-gradient-to-b from-[#F2C94C] via-[#F2D675] to-[#B8902E] bg-clip-text text-transparent">FORCE</span> SPORTS UNITED
         </Link>
@@ -39,7 +42,7 @@ const Navbar = () => {
           {navLinks.map((link) => (
             <Link
               key={link.to}
-              to={link.to}
+              href={link.to}
               className={`font-heading text-xs tracking-widest uppercase transition-colors hover:text-primary ${
                 isActive(link.to) ? "text-primary" : "text-muted-foreground"
               }`}
@@ -62,7 +65,7 @@ const Navbar = () => {
                 {moreLinks.map((link) => (
                   <Link
                     key={link.to}
-                    to={link.to}
+                    href={link.to}
                     className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
                   >
                     {link.label}
@@ -73,7 +76,7 @@ const Navbar = () => {
           </div>
 
           <Link
-            to="/quote"
+            href="/quote"
             className="bg-gradient-brand px-5 py-2.5 rounded font-heading text-xs tracking-wider uppercase text-primary-foreground hover:opacity-90 transition-opacity"
           >
             Get a Quote
@@ -92,7 +95,7 @@ const Navbar = () => {
           {[...navLinks, ...moreLinks].map((link) => (
             <Link
               key={link.to}
-              to={link.to}
+              href={link.to}
               onClick={() => setOpen(false)}
               className={`block font-heading text-sm tracking-widest uppercase transition-colors hover:text-primary ${
                 isActive(link.to) ? "text-primary" : "text-muted-foreground"
@@ -102,7 +105,7 @@ const Navbar = () => {
             </Link>
           ))}
           <Link
-            to="/quote"
+            href="/quote"
             onClick={() => setOpen(false)}
             className="block text-center bg-gradient-brand px-5 py-3 rounded font-heading text-sm tracking-wider uppercase text-primary-foreground mt-4"
           >
