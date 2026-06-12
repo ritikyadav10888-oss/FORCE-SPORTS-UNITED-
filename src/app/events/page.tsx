@@ -42,8 +42,9 @@ const impact = [
 ];
 
 const events = [
-  { r2Folder: "ASL Fr.CRCE_", r2Files: ["IMG20260606163441.jpg", "IMG_1460.JPG", "DSC_0358.JPG", "IMG_1492.JPG", "IMG_1496.JPG", "IMG_1504.JPG", "IMG20260606222548.jpg"], title: "Fr. CRCE Alumni Sports League", category: "Alumni Event", stats: [{ value: "2026", label: "Year" }, { value: "8", label: "Teams" }, { value: "64", label: "Players" }], desc: "Alumni event bringing together former students for an exciting sports league." },
+  { albumName: "Fr. CRCE Alumni Sports League", r2Folder: "ASL Fr.CRCE_", r2Files: ["IMG20260606163441.jpg", "IMG_1460.JPG", "DSC_0358.JPG", "IMG_1492.JPG", "IMG_1496.JPG", "IMG_1504.JPG", "IMG20260606222548.jpg"], title: "Fr. CRCE Alumni Sports League", category: "Alumni Event", stats: [{ value: "2026", label: "Year" }, { value: "8", label: "Teams" }, { value: "64", label: "Players" }], desc: "Alumni event bringing together former students for an exciting sports league." },
   {
+    albumName: "Gitanjali Narnolia Cricket League 2026",
     r2Folder: "Gitanjali Narnolia cricket leauge",
     title: "GPL",
     category: "CORPORATE LEAGUE",

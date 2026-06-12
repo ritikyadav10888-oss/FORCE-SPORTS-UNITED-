@@ -45,8 +45,7 @@ export default function FeaturedEventCard({ event, className = "" }: FeaturedEve
           <img src={(event.image as any)?.src || event.image as string} alt={event.title} className={`w-full h-full group-hover:scale-105 transition-transform duration-500 ${(event as any).containImage ? "object-contain bg-white p-2" : "object-cover"}`} loading="lazy" width={800} height={600} />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1110] group-hover:scale-105 transition-transform duration-500">
-            <Trophy size={40} className="text-primary mb-4" />
-            <span className="font-heading text-xl font-bold tracking-widest text-primary uppercase">Upcoming</span>
+            <Trophy size={40} className="text-primary" />
           </div>
         )}
       </div>

@@ -153,7 +153,7 @@ export default function MediaGallery() {
             </div>
             <div className="p-5 text-center flex flex-col items-center flex-1">
               <h3 className="font-heading text-xl font-bold mb-4">{album.name}</h3>
-              <span className="bg-secondary border border-border text-foreground hover:border-primary hover:text-primary transition-colors px-6 py-2 rounded font-heading uppercase text-sm tracking-widest mt-auto">
+              <span className="bg-gradient-brand text-primary-foreground px-5 py-2.5 rounded font-heading uppercase text-xs tracking-wider hover:opacity-90 transition-opacity mt-auto">
                 View Album
               </span>
             </div>
@@ -293,11 +293,11 @@ export default function MediaGallery() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {videos.slice(0, visibleVideoCount).map((src, i) => (
                     <div key={`r2-${i}`} className="group overflow-hidden rounded-lg bg-black border border-border flex flex-col h-full">
-                      <div className="relative aspect-video w-full">
+                      <div className="relative aspect-video w-full bg-black">
                         <video 
                           src={`${src}#t=0.5`}
                           controls 
-                          className="w-full h-full object-contain bg-black"
+                          className="absolute inset-0 w-full h-full object-contain bg-black"
                           preload="metadata"
                           playsInline
                         />
