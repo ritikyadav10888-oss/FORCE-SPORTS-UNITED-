@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Download, Loader2 } from "lucide-react";
@@ -83,6 +83,8 @@ export default function MediaGallery() {
   const [youtubeVideos, setYoutubeVideos] = useState<string[]>([]);
   const [isLoadingAssets, setIsLoadingAssets] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState({ current: 0, total: 0 });
+  const abortControllerRef = useRef<AbortController | null>(null);
   const [visibleCount, setVisibleCount] = useState(24);
   const [visibleVideoCount, setVisibleVideoCount] = useState(6);
 
@@ -145,8 +147,8 @@ export default function MediaGallery() {
 
   if (!selectedAlbum) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {ALBUMS.map((album) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in-up">
+        {ALBUMS.map(album => (
           <div
             key={album.id}
             className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors cursor-pointer group flex flex-col h-full"
@@ -167,6 +169,35 @@ export default function MediaGallery() {
     );
   }
 
+  const handleSingleDownload = async (url: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!('showSaveFilePicker' in window)) {
+      window.open(url, '_blank');
+      return;
+    }
+    
+    try {
+      const isVideo = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mov');
+      const prefix = isVideo ? 'video' : 'photo';
+      let ext = url.split('.').pop() || 'jpg';
+      ext = ext.split('?')[0]; 
+      
+      const fileHandle = await (window as any).showSaveFilePicker({
+        suggestedName: `${selectedAlbum?.name.replace(/\s+/g, '-')}-${prefix}.${ext}`,
+      });
+      
+      const writable = await fileHandle.createWritable();
+      const response = await fetch(`${url}?download=true`, { cache: 'no-store' });
+      await response.body?.pipeTo(writable);
+      alert(`${isVideo ? 'Video' : 'Photo'} downloaded successfully!`);
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        console.error("Error downloading file:", error);
+        alert("Failed to download file. The connection might have dropped.");
+      }
+    }
+  };
+
   return (
     <div className="animate-fade-in-up">
       <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
@@ -174,64 +205,87 @@ export default function MediaGallery() {
         
         <div className="flex flex-col items-center sm:items-end gap-2">
           <div className="flex gap-4">
-            <button
-              onClick={async () => {
-                const totalFiles = images.length + videos.length;
-                if (window.confirm(`Are you sure you want to download all ${totalFiles} files as a ZIP? Note: This may take a while depending on your internet speed.`)) {
-                  setIsDownloading(true);
-                  try {
-                    const allUrls = [...images, ...videos];
-                    
-                    // Fallback for browsers that don't support showSaveFilePicker
-                    if (!('showSaveFilePicker' in window)) {
-                      alert("Your browser does not support streaming massive ZIPs directly to your hard drive. Please use Google Chrome or Microsoft Edge to download all videos as a ZIP.");
-                      setIsDownloading(false);
-                      return;
-                    }
-
-                    // Ask user where to save the massive ZIP file upfront
-                    const fileHandle = await (window as any).showSaveFilePicker({
-                      suggestedName: `${selectedAlbum.name.replace(/\s+/g, '-')}.zip`,
-                      types: [{
-                        description: 'Zip Archive',
-                        accept: { 'application/zip': ['.zip'] },
-                      }],
-                    });
-                    
-                    const writable = await fileHandle.createWritable();
-
-                    // Generator function to stream files one by one without loading all in RAM
-                    async function* getFiles() {
-                      for (let i = 0; i < allUrls.length; i++) {
-                        const url = allUrls[i];
-                        const response = await fetch(url);
-                        let ext = url.split('.').pop() || 'jpg';
-                        ext = ext.split('?')[0]; 
-                        const prefix = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mov') ? 'video' : 'photo';
-                        yield { name: `${selectedAlbum.name.replace(/\s+/g, '-')}-${prefix}-${i + 1}.${ext}`, input: response };
-                      }
-                    }
-
-                    // Stream the zip directly to the hard drive
-                    await downloadZip(getFiles()).body.pipeTo(writable);
-                    
-                    alert("Download complete! All files have been successfully zipped to your computer.");
-                  } catch (error: any) {
-                    // Ignore DOMException if user cancels the save dialog
-                    if (error.name !== 'AbortError') {
-                      console.error("Error streaming zip:", error);
-                      alert("Failed to download files. The connection might have dropped.");
-                    }
-                  } finally {
-                    setIsDownloading(false);
+            {isDownloading ? (
+              <button
+                onClick={() => {
+                  if (abortControllerRef.current) {
+                    abortControllerRef.current.abort();
                   }
-                }
-              }}
-              disabled={isDownloading || isLoadingAssets}
-              className={`px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:opacity-90 transition-opacity font-bold uppercase tracking-wider flex items-center gap-2 shrink-0 ${isDownloading || isLoadingAssets ? 'opacity-70 cursor-not-allowed' : ''}`}
-            >
-              {isDownloading ? <><Loader2 size={16} className="animate-spin" /> Zipping...</> : <><Download size={16} /> Download All</>}
-            </button>
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors font-bold uppercase tracking-wider flex items-center gap-2 shrink-0"
+              >
+                <Loader2 size={16} className="animate-spin" /> 
+                Cancel Zipping ({downloadProgress.current}/{downloadProgress.total})
+              </button>
+            ) : (
+              <button
+                onClick={async () => {
+                  const totalFiles = images.length + videos.length;
+                  if (window.confirm(`Are you sure you want to download all ${totalFiles} files as a ZIP? Note: This may take a while depending on your internet speed.`)) {
+                    setIsDownloading(true);
+                    setDownloadProgress({ current: 0, total: totalFiles });
+                    abortControllerRef.current = new AbortController();
+                    try {
+                      const allUrls = [...images, ...videos];
+                      
+                      // Fallback for browsers that don't support showSaveFilePicker
+                      if (!('showSaveFilePicker' in window)) {
+                        alert("Your browser does not support streaming massive ZIPs directly to your hard drive. Please use Google Chrome or Microsoft Edge to download all videos as a ZIP.");
+                        setIsDownloading(false);
+                        return;
+                      }
+
+                      // Ask user where to save the massive ZIP file upfront
+                      const fileHandle = await (window as any).showSaveFilePicker({
+                        suggestedName: `${selectedAlbum.name.replace(/\s+/g, '-')}.zip`,
+                        types: [{
+                          description: 'Zip Archive',
+                          accept: { 'application/zip': ['.zip'] },
+                        }],
+                      });
+                      
+                      const writable = await fileHandle.createWritable();
+
+                      // Generator function to stream files one by one without loading all in RAM
+                      async function* getFiles() {
+                        for (let i = 0; i < allUrls.length; i++) {
+                          const url = allUrls[i];
+                          // Force cache bypass to prevent CORS errors from previously cached <img> tags
+                          const response = await fetch(`${url}?download=true`, { 
+                            cache: 'no-store',
+                            signal: abortControllerRef.current?.signal 
+                          });
+                          let ext = url.split('.').pop() || 'jpg';
+                          ext = ext.split('?')[0]; 
+                          const prefix = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mov') ? 'video' : 'photo';
+                          
+                          setDownloadProgress(prev => ({ ...prev, current: i + 1 }));
+                          yield { name: `${selectedAlbum.name.replace(/\s+/g, '-')}-${prefix}-${i + 1}.${ext}`, input: response };
+                        }
+                      }
+
+                      // Stream the zip directly to the hard drive
+                      await downloadZip(getFiles()).body.pipeTo(writable, { signal: abortControllerRef.current.signal });
+                      
+                      alert("Download complete! All files have been successfully zipped to your computer.");
+                    } catch (error: any) {
+                      // Ignore DOMException if user cancels the save dialog or aborts
+                      if (error.name !== 'AbortError') {
+                        console.error("Error streaming zip:", error);
+                        alert("Failed to download files. The connection might have dropped.");
+                      }
+                    } finally {
+                      setIsDownloading(false);
+                      setDownloadProgress({ current: 0, total: 0 });
+                    }
+                  }
+                }}
+                disabled={isLoadingAssets}
+                className={`px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:opacity-90 transition-opacity font-bold uppercase tracking-wider flex items-center gap-2 shrink-0 ${isLoadingAssets ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
+                <Download size={16} /> Download All
+              </button>
+            )}
             <button
               onClick={() => {
                 setSelectedAlbum(null);
@@ -271,24 +325,30 @@ export default function MediaGallery() {
               <div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {images.slice(0, visibleCount).map((src, i) => (
-                    <div key={i} className="group relative aspect-square overflow-hidden rounded-lg bg-secondary border border-border">
-                      <Image src={(src as any).src || src}
-                        alt={`Gallery ${i + 1}`}
-                        fill
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <a
-                          href={src}
-                          download
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-primary text-primary-foreground p-3 rounded-full hover:scale-110 transition-transform shadow-xl"
+                    <div key={i} className="group overflow-hidden rounded-lg bg-secondary border border-border flex flex-col">
+                      <div className="relative aspect-square overflow-hidden w-full">
+                        <Image src={(src as any).src || src}
+                          alt={`Gallery ${i + 1}`}
+                          fill
+                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-3 bg-card border-t border-border flex gap-2">
+                        <button
+                          onClick={() => window.open((src as any).src || src, '_blank')}
+                          className="flex-1 bg-secondary text-foreground py-2 rounded text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
+                          title="View Image in New Tab"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={(e) => handleSingleDownload((src as any).src || src, e)}
+                          className="flex-1 bg-primary text-primary-foreground py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
                           title="Download Image"
                         >
-                          <Download size={20} />
-                        </a>
+                          <Download size={14} /> Download
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -316,18 +376,31 @@ export default function MediaGallery() {
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {videos.slice(0, visibleVideoCount).map((src, i) => (
-                    <div key={`r2-${i}`} className="group relative aspect-video overflow-hidden rounded-lg bg-black border border-border">
-                      <video 
-                        src={src} 
-                        controls 
-                        className="w-full h-full object-contain bg-black"
-                        preload="metadata"
-                        playsInline
-                      />
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                        <a href={src} download target="_blank" rel="noopener noreferrer" className="bg-background/80 text-foreground p-2 rounded hover:bg-primary hover:text-primary-foreground transition-colors shadow-lg pointer-events-auto block" title="Download Video">
-                          <Download size={16} />
-                        </a>
+                    <div key={`r2-${i}`} className="group overflow-hidden rounded-lg bg-black border border-border flex flex-col">
+                      <div className="relative aspect-video w-full">
+                        <video 
+                          src={src} 
+                          controls 
+                          className="w-full h-full object-contain bg-black"
+                          preload="metadata"
+                          playsInline
+                        />
+                      </div>
+                      <div className="p-3 bg-card border-t border-border flex gap-2">
+                        <button
+                          onClick={() => window.open(src, '_blank')}
+                          className="flex-1 bg-secondary text-foreground py-2 rounded text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
+                          title="View Video in New Tab"
+                        >
+                          View
+                        </button>
+                        <button 
+                          onClick={(e) => handleSingleDownload(src, e)}
+                          className="flex-1 bg-primary text-primary-foreground py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 hover:opacity-90 transition-opacity" 
+                          title="Download Video"
+                        >
+                          <Download size={14} /> Download
+                        </button>
                       </div>
                     </div>
                   ))}
