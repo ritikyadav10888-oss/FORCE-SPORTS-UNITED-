@@ -245,7 +245,7 @@ export default function MediaGallery() {
                           alt={`Gallery ${i + 1}`}
                           fill
                           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                          quality={60}
+                          unoptimized={true}
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       </div>
