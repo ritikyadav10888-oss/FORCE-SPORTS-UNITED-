@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { Download, Loader2 } from "lucide-react";
+import { downloadZip } from "client-zip";
 import { listFilesInFolder, getFileUrlFromR2 } from "@/lib/r2";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 import mediaImg from "@/assets/media-production.jpg";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
 
@@ -175,27 +177,51 @@ export default function MediaGallery() {
             <button
               onClick={async () => {
                 const totalFiles = images.length + videos.length;
-                if (window.confirm(`Are you sure you want to download all ${totalFiles} files as a ZIP? Note: This includes large video files which may take a while to process.`)) {
+                if (window.confirm(`Are you sure you want to download all ${totalFiles} files as a ZIP? Note: This may take a while depending on your internet speed.`)) {
                   setIsDownloading(true);
                   try {
-                    const zip = new JSZip();
                     const allUrls = [...images, ...videos];
                     
-                    for (let i = 0; i < allUrls.length; i++) {
-                      const url = allUrls[i];
-                      const response = await fetch(url);
-                      const blob = await response.blob();
-                      let ext = url.split('.').pop() || 'jpg';
-                      ext = ext.split('?')[0]; 
-                      const prefix = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mov') ? 'video' : 'image';
-                      zip.file(`${selectedAlbum.name.replace(/\s+/g, '-')}-${prefix}-${i + 1}.${ext}`, blob);
+                    // Fallback for browsers that don't support showSaveFilePicker
+                    if (!('showSaveFilePicker' in window)) {
+                      alert("Your browser does not support streaming massive ZIPs directly to your hard drive. Please use Google Chrome or Microsoft Edge to download all videos as a ZIP.");
+                      setIsDownloading(false);
+                      return;
                     }
+
+                    // Ask user where to save the massive ZIP file upfront
+                    const fileHandle = await (window as any).showSaveFilePicker({
+                      suggestedName: `${selectedAlbum.name.replace(/\s+/g, '-')}.zip`,
+                      types: [{
+                        description: 'Zip Archive',
+                        accept: { 'application/zip': ['.zip'] },
+                      }],
+                    });
                     
-                    const content = await zip.generateAsync({ type: "blob" });
-                    saveAs(content, `${selectedAlbum.name.replace(/\s+/g, '-')}.zip`);
-                  } catch (error) {
-                    console.error("Error creating zip:", error);
-                    alert("Failed to download files. The videos might be too large for the browser memory limit.");
+                    const writable = await fileHandle.createWritable();
+
+                    // Generator function to stream files one by one without loading all in RAM
+                    async function* getFiles() {
+                      for (let i = 0; i < allUrls.length; i++) {
+                        const url = allUrls[i];
+                        const response = await fetch(url);
+                        let ext = url.split('.').pop() || 'jpg';
+                        ext = ext.split('?')[0]; 
+                        const prefix = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mov') ? 'video' : 'photo';
+                        yield { name: `${selectedAlbum.name.replace(/\s+/g, '-')}-${prefix}-${i + 1}.${ext}`, input: response };
+                      }
+                    }
+
+                    // Stream the zip directly to the hard drive
+                    await downloadZip(getFiles()).body.pipeTo(writable);
+                    
+                    alert("Download complete! All files have been successfully zipped to your computer.");
+                  } catch (error: any) {
+                    // Ignore DOMException if user cancels the save dialog
+                    if (error.name !== 'AbortError') {
+                      console.error("Error streaming zip:", error);
+                      alert("Failed to download files. The connection might have dropped.");
+                    }
                   } finally {
                     setIsDownloading(false);
                   }
@@ -246,10 +272,11 @@ export default function MediaGallery() {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {images.slice(0, visibleCount).map((src, i) => (
                     <div key={i} className="group relative aspect-square overflow-hidden rounded-lg bg-secondary border border-border">
-                      <img src={(src as any).src || src}
+                      <Image src={(src as any).src || src}
                         alt={`Gallery ${i + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
+                        fill
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <a
