@@ -71,7 +71,7 @@ const Services = () => (
         <div className="text-center mb-16 animate-fade-in-up">
           <p className="font-heading text-primary text-sm tracking-[0.3em] uppercase mb-3">our sporting spirit</p>
           <h1 className="font-heading text-4xl md:text-6xl font-bold mb-4">
-            THE TEAM <span className="text-gradient">Behind The TEAM</span>
+            ONE PARTNER. <span className="text-gradient">EVERY DETAIL COVERED.</span>
           </h1>
           <p className="text-muted-foreground max-w-3xl mx-auto">
             Force Sports United is a sports league management company focused on delivering structured, high-quality sporting experiences — from the first registration form to the final trophy presentation.

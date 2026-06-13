@@ -105,14 +105,14 @@ const featuredEvents = [
     stats: [{ value: "120", label: "Players" }, { value: "Mixed", label: "Categories" }, { value: "Corp", label: "Event" }],
     desc: "Corporate event featuring professional cricket matches and a grand prize distribution."
   },
-  { 
-    image: eventLeague, 
-    hasImage: true, 
-    title: "YUVA PREMIER LEAGUE (YPL)", 
-    titleColor: "text-foreground", 
+  {
+    image: eventLeague,
+    hasImage: true,
+    title: "YUVA PREMIER LEAGUE (YPL)",
+    titleColor: "text-foreground",
     category: "YUVA PREMIER LEAGUE",
-    stats: [{ value: "11", label: "Seasons" }, { value: "750+", label: "Players" }, { value: "3", label: "Sports" }], 
-    desc: "Multi-season league featuring 3 sports with franchise-style team ownership." 
+    stats: [{ value: "11", label: "Seasons" }, { value: "750+", label: "Players" }, { value: "3", label: "Sports" }],
+    desc: "Multi-season league featuring 3 sports with franchise-style team ownership."
   },
 ];
 
@@ -168,7 +168,7 @@ const Index = () => {
           <div className="text-center mb-16 animate-fade-in-up">
             <p className="font-heading text-primary text-sm tracking-[0.3em] uppercase mb-3">Our Sporting Spirit</p>
             <h2 className="font-heading text-4xl md:text-6xl font-bold mb-6 uppercase">
-              The Team <span className="text-gradient">Behind The TEAM</span>
+              ONE PARTNER.<span className="text-gradient">EVERY DETAIL COVERED.</span>
             </h2>
             <p className="text-muted-foreground max-w-3xl mx-auto">
               Force Sports United is a sports league management company focused on delivering structured, high-quality sporting experiences — from the first registration form to the final trophy presentation.
