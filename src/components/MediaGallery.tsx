@@ -12,7 +12,7 @@ import mediaImg from "@/assets/media-production.jpg";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
 import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
 import { CRCE_ALBUM_NAME, CRCE_R2_FILES, CRCE_R2_FOLDER } from "@/data/crce";
-import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_FILES } from "@/data/monsoon-match";
+import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_R2_FILES, MONSOON_MATCH_R2_FOLDER, MONSOON_MATCH_R2_PHOTOS } from "@/data/monsoon-match";
 
 type YouTubeLink = { title: string; url: string };
 
@@ -45,7 +45,9 @@ const ALBUMS: Album[] = [
   {
     id: "monsoon-match",
     name: MONSOON_MATCH_ALBUM_NAME,
-    localFiles: MONSOON_MATCH_FILES,
+    r2Folder: MONSOON_MATCH_R2_FOLDER,
+    carouselFiles: MONSOON_MATCH_R2_PHOTOS,
+    r2Files: MONSOON_MATCH_R2_FILES,
     youtubeLinks: [] as YouTubeLink[],
   },
   { 
