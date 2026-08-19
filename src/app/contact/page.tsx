@@ -10,11 +10,25 @@ const eventTypes = ["Box Cricket", "Cricket League", "Corporate Tournament", "Ma
 const Contact = () => {
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", company: "", email: "", phone: "", eventType: "", budget: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Message sent!", description: "We'll get back to you within 24 hours." });
-    setForm({ name: "", company: "", email: "", phone: "", eventType: "", budget: "", message: "" });
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Request failed");
+      toast({ title: "Message sent!", description: "We'll get back to you within 24 hours." });
+      setForm({ name: "", company: "", email: "", phone: "", eventType: "", budget: "", message: "" });
+    } catch {
+      toast({ title: "Something went wrong", description: "Please try again or reach us on WhatsApp.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass = "w-full bg-secondary border border-border rounded px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm";
@@ -93,8 +107,8 @@ const Contact = () => {
               <label className="block text-xs font-heading tracking-wider uppercase mb-2">Message *</label>
               <textarea required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${inputClass} resize-none`} placeholder="Tell us about your event..." />
             </div>
-            <button type="submit" className="w-full bg-gradient-brand px-8 py-4 rounded font-heading text-sm tracking-wider uppercase text-primary-foreground hover:opacity-90 transition-opacity">
-              Send Message
+            <button type="submit" disabled={isSubmitting} className="w-full bg-gradient-brand px-8 py-4 rounded font-heading text-sm tracking-wider uppercase text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>

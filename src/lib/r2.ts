@@ -84,7 +84,7 @@ export async function listFilesInFolder(folder: string) {
   }
 
   // 2. Check localStorage cache to survive page reloads
-  const cacheKey = `r2_folder_v2_${folder}`;
+  const cacheKey = `r2_folder_v3_${folder}`;
   try {
     const localCachedStr = localStorage.getItem(cacheKey);
     if (localCachedStr) {
@@ -110,7 +110,12 @@ export async function listFilesInFolder(folder: string) {
   const response = await r2Client.send(command);
   
   // Return the list of keys (file paths)
-  const keys = response.Contents?.map((item) => item.Key as string) || [];
+  const keys = (response.Contents?.map((item) => item.Key as string) || [])
+    .filter((key) => key && !key.endsWith("/"));
+
+  if (!keys.length) {
+    return keys;
+  }
   
   // Save to memory cache
   const cacheData = { keys, timestamp: Date.now() };

@@ -15,6 +15,7 @@ const Quote = () => {
     eventType: "", teams: "", location: "", dateStart: "", dateEnd: "",
     addOns: [] as string[], details: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleAddOn = (addon: string) => {
     setForm((f) => ({
@@ -23,10 +24,23 @@ const Quote = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Quote request submitted!", description: "Our team will reach out within 24 hours with a custom proposal." });
-    setForm({ name: "", email: "", phone: "", company: "", eventType: "", teams: "", location: "", dateStart: "", dateEnd: "", addOns: [], details: "" });
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Request failed");
+      toast({ title: "Quote request submitted!", description: "Our team will reach out within 24 hours with a custom proposal." });
+      setForm({ name: "", email: "", phone: "", company: "", eventType: "", teams: "", location: "", dateStart: "", dateEnd: "", addOns: [], details: "" });
+    } catch {
+      toast({ title: "Something went wrong", description: "Please try again or contact us directly.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass = "w-full bg-secondary border border-border rounded px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm";
@@ -130,8 +144,8 @@ const Quote = () => {
               <textarea rows={4} value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} className={`${inputClass} resize-none`} placeholder="Special requirements, format preferences, budget range..." />
             </div>
 
-            <button type="submit" className="w-full bg-gradient-brand px-8 py-4 rounded font-heading text-sm tracking-wider uppercase text-primary-foreground hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-              Submit Quote Request <ArrowRight size={16} />
+            <button type="submit" disabled={isSubmitting} className="w-full bg-gradient-brand px-8 py-4 rounded font-heading text-sm tracking-wider uppercase text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              {isSubmitting ? "Submitting..." : "Submit Quote Request"} {!isSubmitting && <ArrowRight size={16} />}
             </button>
           </form>
         </div>

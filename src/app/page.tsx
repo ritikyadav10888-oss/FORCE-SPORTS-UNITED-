@@ -27,11 +27,12 @@ import Layout from "@/components/Layout";
 import FeaturedEventCard from "@/components/FeaturedEventCard";
 import heroBg from "@/assets/hero-bg.jpg";
 import eventBox from "@/assets/event-boxcricket.jpg";
-import eventLeague from "@/assets/event-league.jpg";
 import eventCorporate from "@/assets/event-corporate.jpg";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
+import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
+import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
 
 const stats = [
   { icon: Users, value: "1,500+", label: "Participants" },
@@ -77,6 +78,17 @@ const verticals = [
 
 const featuredEvents = [
   {
+    r2Folder: OPL_R2_FOLDER,
+    r2Files: OPL_R2_AUCTION_FILES,
+    albumName: OPL_ALBUM_NAME,
+    hasImage: true,
+    title: "OCTACREST PREMIER LEAGUE (OPL)",
+    titleColor: "text-foreground",
+    category: "OCTACREST PREMIER LEAGUE",
+    stats: [{ value: "2026", label: "Year" }, { value: "Monsoon", label: "Edition" }, { value: "1", label: "Season" }],
+    desc: "Monsoon cricket league featuring franchise-style team auctions and competitive match play.",
+  },
+  {
     r2Folder: "ASL Fr.CRCE_",
     r2Files: [
       "IMG20260606163441.jpg",
@@ -96,23 +108,14 @@ const featuredEvents = [
     desc: "Alumni event bringing together former students for an exciting sports league."
   },
   {
-    r2Folder: "Gitanjali Narnolia cricket leauge",
-    albumName: "Gitanjali Narnolia Cricket League 2026",
+    albumName: MONSOON_MATCH_ALBUM_NAME,
+    image: MONSOON_MATCH_PHOTOS,
     hasImage: true,
-    title: "GPL - CORPORATE LEAGUE",
+    title: "MONSOON MATCH",
     titleColor: "text-foreground",
-    category: "CORPORATE LEAGUE",
-    stats: [{ value: "120", label: "Players" }, { value: "Mixed", label: "Categories" }, { value: "Corp", label: "Event" }],
-    desc: "Corporate event featuring professional cricket matches and a grand prize distribution."
-  },
-  {
-    image: eventLeague,
-    hasImage: true,
-    title: "YUVA PREMIER LEAGUE (YPL)",
-    titleColor: "text-foreground",
-    category: "YUVA PREMIER LEAGUE",
-    stats: [{ value: "11", label: "Seasons" }, { value: "750+", label: "Players" }, { value: "3", label: "Sports" }],
-    desc: "Multi-season league featuring 3 sports with franchise-style team ownership."
+    category: "MONSOON CRICKET",
+    stats: [{ value: "2026", label: "Year" }, { value: "Monsoon", label: "Season" }, { value: "1", label: "Sport" }],
+    desc: "On-ground monsoon cricket with match photography and video coverage.",
   },
 ];
 

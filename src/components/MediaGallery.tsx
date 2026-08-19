@@ -1,27 +1,59 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, Play } from "lucide-react";
 import { listFilesInFolder, getFileUrlFromR2 } from "@/lib/r2";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import mediaImg from "@/assets/media-production.jpg";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
+import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
+import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_FOLDER, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
+import { listLocalMediaAction } from "@/app/actions/local-media";
 
-const ALBUMS = [
+type YouTubeLink = { title: string; url: string };
+
+type Album = {
+  id: string;
+  name: string;
+  r2Folder?: string;
+  carouselFiles?: string[];
+  r2Files?: string[];
+  localFiles?: string[];
+  localFolder?: string;
+  youtubeLinks: YouTubeLink[];
+};
+
+const ALBUMS: Album[] = [
+  {
+    id: "opl",
+    name: OPL_ALBUM_NAME,
+    r2Folder: OPL_R2_FOLDER,
+    carouselFiles: OPL_R2_AUCTION_FILES,
+    youtubeLinks: [] as YouTubeLink[],
+  },
   { 
     id: "crce", 
     name: "Fr. CRCE Alumni Sports League", 
     r2Folder: "ASL Fr.CRCE_",
     carouselFiles: ["IMG20260606163441.jpg", "IMG_1460.JPG", "DSC_0358.JPG", "IMG_1492.JPG", "IMG_1496.JPG", "IMG_1504.JPG", "IMG20260606222548.jpg"],
-    youtubeLinks: []
+    youtubeLinks: [] as YouTubeLink[],
+  },
+  {
+    id: "monsoon-match",
+    name: MONSOON_MATCH_ALBUM_NAME,
+    localFolder: MONSOON_MATCH_FOLDER,
+    localFiles: MONSOON_MATCH_PHOTOS,
+    youtubeLinks: [] as YouTubeLink[],
   },
   { 
     id: "gitanjali", 
     name: "Gitanjali Narnolia Cricket League 2026", 
     r2Folder: "Gitanjali Narnolia cricket leauge", 
-    youtubeLinks: []
+    youtubeLinks: [] as YouTubeLink[],
   }
 ];
 
@@ -77,7 +109,8 @@ export default function MediaGallery() {
   
   const [images, setImages] = useState<string[]>([]);
   const [videos, setVideos] = useState<string[]>([]);
-  const [youtubeVideos, setYoutubeVideos] = useState<string[]>([]);
+  const [youtubeVideos, setYoutubeVideos] = useState<YouTubeLink[]>([]);
+  const [playingYouTubeId, setPlayingYouTubeId] = useState<string | null>(null);
   const [isLoadingAssets, setIsLoadingAssets] = useState(false);
   const [visibleCount, setVisibleCount] = useState(24);
   const [visibleVideoCount, setVisibleVideoCount] = useState(6);
@@ -99,14 +132,29 @@ export default function MediaGallery() {
       setVisibleCount(24);
       setVisibleVideoCount(6);
       try {
-        let keys: string[] = [];
-        if ((selectedAlbum as any).r2Files && (selectedAlbum as any).r2Files.length > 0) {
-          keys = (selectedAlbum as any).r2Files.map((f: string) => `${selectedAlbum!.r2Folder}/${f}`);
+        let urls: string[] = [];
+
+        if (selectedAlbum!.localFolder) {
+          urls = await listLocalMediaAction(selectedAlbum!.localFolder);
+          if (!urls.length && selectedAlbum!.localFiles?.length) {
+            urls = selectedAlbum!.localFiles;
+          }
+        } else if (selectedAlbum!.localFiles && selectedAlbum!.localFiles.length > 0) {
+          urls = selectedAlbum!.localFiles;
         } else {
-          keys = await listFilesInFolder(selectedAlbum!.r2Folder);
+          let keys: string[] = [];
+          if (selectedAlbum!.r2Files && selectedAlbum!.r2Files.length > 0) {
+            keys = selectedAlbum!.r2Files.map((f) => `${selectedAlbum!.r2Folder}/${f}`);
+          } else if (selectedAlbum!.r2Folder) {
+            keys = await listFilesInFolder(selectedAlbum!.r2Folder);
+          }
+
+          if (!keys.length && selectedAlbum!.carouselFiles?.length && selectedAlbum!.r2Folder) {
+            keys = selectedAlbum!.carouselFiles.map((f) => `${selectedAlbum!.r2Folder}/${f}`);
+          }
+
+          urls = await Promise.all(keys.map(key => getFileUrlFromR2(key)));
         }
-        
-        const urls = await Promise.all(keys.map(key => getFileUrlFromR2(key)));
         
         if (isMounted) {
           const vids: string[] = [];
@@ -114,7 +162,7 @@ export default function MediaGallery() {
           
           urls.forEach(url => {
             const lowerUrl = url.toLowerCase();
-            if (lowerUrl.includes(".mp4") || lowerUrl.includes(".mov")) {
+            if (lowerUrl.includes(".mp4") || lowerUrl.includes(".mov") || lowerUrl.includes(".webm")) {
               vids.push(url);
             } else {
               imgs.push(url);
@@ -123,10 +171,28 @@ export default function MediaGallery() {
           
           setVideos(vids);
           setImages(imgs);
-          setYoutubeVideos(selectedAlbum.youtubeLinks || []);
+          const links = selectedAlbum.youtubeLinks || [];
+          setYoutubeVideos(links);
+          setPlayingYouTubeId(links.map((item) => getYouTubeId(item.url)).find(Boolean) || null);
         }
       } catch (err) {
-        console.error("Failed to fetch from R2:", err);
+        console.error("Failed to fetch album media:", err);
+        if (isMounted) {
+          const links = selectedAlbum.youtubeLinks || [];
+          setYoutubeVideos(links);
+          setPlayingYouTubeId(links.map((item) => getYouTubeId(item.url)).find(Boolean) || null);
+          if (selectedAlbum!.r2Folder && selectedAlbum!.carouselFiles?.length) {
+            const fallbackUrls = await Promise.all(
+              selectedAlbum!.carouselFiles.map((f) => getFileUrlFromR2(`${selectedAlbum!.r2Folder}/${f}`))
+            );
+            setImages(fallbackUrls.filter((url) => !url.toLowerCase().match(/\.(mp4|mov|webm)$/)));
+            setVideos(fallbackUrls.filter((url) => url.toLowerCase().match(/\.(mp4|mov|webm)$/)));
+          } else {
+            const fallback = selectedAlbum!.localFiles || [];
+            setImages(fallback.filter((url) => !url.toLowerCase().match(/\.(mp4|mov|webm)$/)));
+            setVideos(fallback.filter((url) => url.toLowerCase().match(/\.(mp4|mov|webm)$/)));
+          }
+        }
       } finally {
         if (isMounted) setIsLoadingAssets(false);
       }
@@ -149,7 +215,29 @@ export default function MediaGallery() {
             onClick={() => setSelectedAlbum(album)}
           >
             <div className="aspect-[4/3] w-full overflow-hidden relative pointer-events-none">
-              <R2EventCarousel folder={album.r2Folder} files={(album as any).carouselFiles} />
+              {album.localFiles?.length ? (
+                <Carousel
+                  className="w-full h-full"
+                  plugins={[Autoplay({ delay: 3500, stopOnInteraction: true })]}
+                >
+                  <CarouselContent className="h-full ml-0">
+                    {album.localFiles.slice(0, 6).map((src, idx) => (
+                      <CarouselItem key={idx} className="relative h-full pl-0">
+                        <img
+                          src={src}
+                          alt={`${album.name} slide ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              ) : album.r2Folder ? (
+                <R2EventCarousel folder={album.r2Folder} files={album.carouselFiles} />
+              ) : (
+                <img src={mediaImg.src || (mediaImg as any)} alt={album.name} className="w-full h-full object-cover" />
+              )}
             </div>
             <div className="p-5 text-center flex flex-col items-center flex-1">
               <h3 className="font-heading text-xl font-bold mb-4">{album.name}</h3>
@@ -171,7 +259,7 @@ export default function MediaGallery() {
     }
     
     try {
-      const isVideo = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mov');
+      const isVideo = url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.mov') || url.toLowerCase().includes('.webm');
       const prefix = isVideo ? 'video' : 'photo';
       let ext = url.split('.').pop() || 'jpg';
       ext = ext.split('?')[0]; 
@@ -220,7 +308,7 @@ export default function MediaGallery() {
       {isLoadingAssets ? (
         <div className="py-20 flex flex-col items-center justify-center text-muted-foreground">
           <Loader2 size={40} className="animate-spin mb-4 text-primary" />
-          <p className="font-heading tracking-widest uppercase">Fetching files from R2...</p>
+              <p className="font-heading tracking-widest uppercase">Loading gallery...</p>
         </div>
       ) : (
         <Tabs defaultValue="photos" className="w-full">
@@ -341,24 +429,73 @@ export default function MediaGallery() {
           </TabsContent>
 
           <TabsContent value="matches" className="animate-fade-in-up mt-0">
-            {youtubeVideos.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {youtubeVideos.map((url, i) => {
-                  const yId = getYouTubeId(url);
-                  return yId ? (
-                    <div key={`yt-${i}`} className="group relative aspect-video overflow-hidden rounded-lg bg-black border border-border">
-                      <iframe 
-                        src={`https://www.youtube.com/embed/${yId}`} 
-                        title="YouTube video player" 
-                        className="w-full h-full border-0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowFullScreen
-                      ></iframe>
+            {youtubeVideos.length > 0 ? (() => {
+              const playingItem = youtubeVideos.find((item) => getYouTubeId(item.url) === playingYouTubeId);
+              return (
+              <div className="space-y-6 max-w-5xl mx-auto">
+                {playingItem && playingYouTubeId && (
+                    <div className="overflow-hidden rounded-lg bg-card border border-primary/40">
+                      <div className="relative aspect-video bg-black">
+                        <iframe
+                          key={playingYouTubeId}
+                          src={`https://www.youtube.com/embed/${playingYouTubeId}`}
+                          title={playingItem.title}
+                          className="absolute inset-0 w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                        />
+                      </div>
+                      <div className="p-4">
+                        <p className="font-heading text-sm tracking-widest uppercase text-primary">{playingItem.title}</p>
+                      </div>
                     </div>
-                  ) : null;
-                })}
+                )}
+
+                <div className="flex gap-3 overflow-x-auto pb-1">
+                  {youtubeVideos.map((item) => {
+                    const yId = getYouTubeId(item.url);
+                    if (!yId) return null;
+                    const isPlaying = yId === playingYouTubeId;
+                    return (
+                      <button
+                        key={item.url}
+                        type="button"
+                        onClick={() => setPlayingYouTubeId(yId)}
+                        className={`group min-w-[160px] sm:min-w-0 flex-1 overflow-hidden rounded-lg bg-card border text-left transition-colors ${
+                          isPlaying
+                            ? "border-primary"
+                            : "border-border hover:border-primary/60"
+                        }`}
+                      >
+                        <div className="relative aspect-video bg-black">
+                          <img
+                            src={`https://i.ytimg.com/vi/${yId}/hqdefault.jpg`}
+                            alt={item.title}
+                            className={`w-full h-full object-cover ${isPlaying ? "opacity-40" : "group-hover:scale-105 transition-transform duration-500"}`}
+                          />
+                          {isPlaying ? (
+                            <span className="absolute inset-0 flex items-center justify-center font-heading text-[10px] sm:text-xs uppercase tracking-widest text-primary">
+                              Now playing
+                            </span>
+                          ) : (
+                            <span className="absolute inset-0 flex items-center justify-center">
+                              <span className="w-10 h-10 rounded-full bg-black/70 border border-primary/50 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                <Play size={16} className="ml-0.5 fill-current" />
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-3">
+                          <p className="font-heading text-xs tracking-widest uppercase text-primary truncate">{item.title}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            ) : (
+              );
+            })() : (
               <div className="py-20 text-center text-muted-foreground">
                 <p>No pre-recorded matches found in this album.</p>
               </div>

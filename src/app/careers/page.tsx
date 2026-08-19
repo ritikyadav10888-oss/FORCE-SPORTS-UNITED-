@@ -12,16 +12,28 @@ const Careers = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    const form = e.target as HTMLFormElement;
+
+    try {
+      const res = await fetch("/api/careers", {
+        method: "POST",
+        body: new FormData(form),
+      });
+      if (!res.ok) throw new Error("Request failed");
       toast({
         title: "Application Submitted",
         description: "Thank you for applying. We will get back to you shortly.",
       });
+      form.reset();
+    } catch {
+      toast({
+        title: "Something went wrong",
+        description: "Please try again or email us your resume directly.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-      (e.target as HTMLFormElement).reset();
-    }, 1500);
+    }
   };
 
   return (

@@ -23,7 +23,7 @@ export default function FeaturedEventCard({ event, className = "" }: FeaturedEve
   return (
     <div
       onClick={handleClick}
-      className={`bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors group flex flex-col ${event.albumName ? 'cursor-pointer' : ''} ${className}`}
+      className={`@container bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors group flex flex-col min-w-0 ${event.albumName ? 'cursor-pointer' : ''} ${className}`}
     >
       <div className="overflow-hidden aspect-[4/3] w-full relative bg-[#1c1311]">
         {event.r2Folder ? (
@@ -49,29 +49,50 @@ export default function FeaturedEventCard({ event, className = "" }: FeaturedEve
           </div>
         )}
       </div>
-      <div className="p-6 flex-1 flex flex-col">
+      <div className="p-[clamp(0.75rem,4.2cqi,1.5rem)] flex-1 flex flex-col min-w-0">
         {event.category && (
-          <span className="text-primary font-heading uppercase tracking-widest text-xs mb-2">{event.category}</span>
+          <span className="text-primary font-heading uppercase tracking-[0.16em] text-[clamp(0.6rem,2.8cqi,0.75rem)] mb-[clamp(0.25rem,1.2cqi,0.5rem)]">
+            {event.category}
+          </span>
         )}
-        <h3 className={`font-heading text-xl font-bold mb-4 uppercase ${event.titleColor || ''}`}>{event.title}</h3>
+        <h3 className={`font-heading font-bold mb-[clamp(0.6rem,2.4cqi,1rem)] uppercase leading-tight text-[clamp(0.85rem,5cqi,1.25rem)] ${event.titleColor || ''}`}>
+          {event.title}
+        </h3>
         
         {event.stats && event.stats.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {event.stats.slice(0, 3).map((stat: any, i: number) => (
-              <div key={i} className="bg-white/5 rounded-md p-3 text-center flex flex-col justify-center">
-                <span className="text-primary font-bold text-base">{stat.value}</span>
-                <span className="text-muted-foreground text-xs mt-0.5">{stat.label}</span>
-              </div>
-            ))}
+          <div className="grid grid-cols-3 gap-[clamp(0.25rem,1.6cqi,0.5rem)] mb-[clamp(0.6rem,2.4cqi,1rem)]">
+            {event.stats.slice(0, 3).map((stat: any, i: number) => {
+              const value = String(stat.value);
+              const valueSize = `clamp(0.62rem, ${Math.max(0.62, 4.6 / value.length)}rem, 1rem)`;
+
+              return (
+                <div
+                  key={i}
+                  className="min-w-0 bg-white/5 rounded-md px-1.5 py-2.5 text-center flex flex-col justify-center"
+                >
+                  <span
+                    className="block w-full text-primary font-bold leading-tight"
+                    style={{ fontSize: valueSize }}
+                  >
+                    {value}
+                  </span>
+                  <span className="block w-full text-muted-foreground leading-tight mt-0.5 text-[0.65rem]">
+                    {stat.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="flex gap-3 mb-4">
-            {event.teams && <span className="text-xs bg-[#241a18] px-3 py-1.5 rounded text-primary">{event.teams}</span>}
-            {event.players && <span className="text-xs bg-[#241a18] px-3 py-1.5 rounded text-primary">{event.players}</span>}
+          <div className="flex gap-[clamp(0.4rem,1.8cqi,0.75rem)] mb-[clamp(0.6rem,2.4cqi,1rem)]">
+            {event.teams && <span className="text-[clamp(0.6rem,2.6cqi,0.75rem)] bg-[#241a18] px-3 py-1.5 rounded text-primary">{event.teams}</span>}
+            {event.players && <span className="text-[clamp(0.6rem,2.6cqi,0.75rem)] bg-[#241a18] px-3 py-1.5 rounded text-primary">{event.players}</span>}
           </div>
         )}
         
-        <p className="text-muted-foreground text-sm flex-1 mt-2">{event.desc}</p>
+        <p className="text-muted-foreground text-[clamp(0.7rem,3.2cqi,0.875rem)] leading-relaxed flex-1 mt-[clamp(0.25rem,1.2cqi,0.5rem)]">
+          {event.desc}
+        </p>
       </div>
     </div>
   );
