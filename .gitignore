@@ -30,3 +30,8 @@ dist-ssr
 
 # Temporary scripts
 scripts/
+
+# OpenNext / Cloudflare
+.open-next
+.dev.vars
+
