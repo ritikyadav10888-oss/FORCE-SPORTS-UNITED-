@@ -3,7 +3,7 @@ import { isMailConfigured, sendSiteEmail } from "@/lib/mail";
 import { brandedEnquiryEmail } from "@/lib/email-template";
 
 export async function POST(req: Request) {
-  if (!isMailConfigured()) {
+  if (!(await isMailConfigured())) {
     return NextResponse.json({ error: "Email service is not configured." }, { status: 500 });
   }
 

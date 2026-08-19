@@ -5,7 +5,7 @@ import { brandedEnquiryEmail } from "@/lib/email-template";
 const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function POST(req: Request) {
-  if (!isMailConfigured()) {
+  if (!(await isMailConfigured())) {
     return NextResponse.json({ error: "Email service is not configured." }, { status: 500 });
   }
 
