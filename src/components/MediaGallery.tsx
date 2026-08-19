@@ -11,8 +11,7 @@ import Image from "next/image";
 import mediaImg from "@/assets/media-production.jpg";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
 import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
-import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_FOLDER, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
-import { listLocalMediaAction } from "@/app/actions/local-media";
+import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_FILES } from "@/data/monsoon-match";
 
 type YouTubeLink = { title: string; url: string };
 
@@ -45,8 +44,7 @@ const ALBUMS: Album[] = [
   {
     id: "monsoon-match",
     name: MONSOON_MATCH_ALBUM_NAME,
-    localFolder: MONSOON_MATCH_FOLDER,
-    localFiles: MONSOON_MATCH_PHOTOS,
+    localFiles: MONSOON_MATCH_FILES,
     youtubeLinks: [] as YouTubeLink[],
   },
   { 
@@ -134,12 +132,7 @@ export default function MediaGallery() {
       try {
         let urls: string[] = [];
 
-        if (selectedAlbum!.localFolder) {
-          urls = await listLocalMediaAction(selectedAlbum!.localFolder);
-          if (!urls.length && selectedAlbum!.localFiles?.length) {
-            urls = selectedAlbum!.localFiles;
-          }
-        } else if (selectedAlbum!.localFiles && selectedAlbum!.localFiles.length > 0) {
+        if (selectedAlbum!.localFiles && selectedAlbum!.localFiles.length > 0) {
           urls = selectedAlbum!.localFiles;
         } else {
           let keys: string[] = [];
@@ -221,7 +214,10 @@ export default function MediaGallery() {
                   plugins={[Autoplay({ delay: 3500, stopOnInteraction: true })]}
                 >
                   <CarouselContent className="h-full ml-0">
-                    {album.localFiles.slice(0, 6).map((src, idx) => (
+                    {album.localFiles
+                      .filter((src) => !src.toLowerCase().match(/\.(mp4|mov|webm)$/))
+                      .slice(0, 6)
+                      .map((src, idx) => (
                       <CarouselItem key={idx} className="relative h-full pl-0">
                         <img
                           src={src}

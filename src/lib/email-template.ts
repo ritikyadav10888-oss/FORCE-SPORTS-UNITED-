@@ -1,6 +1,6 @@
 const SITE_URL = "https://forcesportsunited.com";
 export const LOGO_CID = "fsu-logo";
-const LOGO_SRC = `cid:${LOGO_CID}`;
+const LOGO_SRC = `${SITE_URL}/logo.png`;
 const WHATSAPP_URL = "https://wa.me/917208829940";
 
 export function escapeHtml(value: unknown) {

@@ -1,13 +1,34 @@
 export const MONSOON_MATCH_ALBUM_NAME = "Monsoon Match";
 export const MONSOON_MATCH_FOLDER = "monsoon match";
 
+const FOLDER = "/monsoon%20match";
+
 export const MONSOON_MATCH_PHOTOS = [
-  "/monsoon%20match/IMG20260620103330.jpg",
-  "/monsoon%20match/IMG20260620103332.jpg",
-  "/monsoon%20match/IMG20260620103358.jpg",
-  "/monsoon%20match/IMG20260620103404.jpg",
-  "/monsoon%20match/IMG20260620103539.jpg",
-  "/monsoon%20match/IMG20260620103546.jpg",
-  "/monsoon%20match/IMG20260620121255.jpg",
-  "/monsoon%20match/IMG_6704.JPG",
+  `${FOLDER}/IMG20260620103330.jpg`,
+  `${FOLDER}/IMG20260620103332.jpg`,
+  `${FOLDER}/IMG20260620103358.jpg`,
+  `${FOLDER}/IMG20260620103404.jpg`,
+  `${FOLDER}/IMG20260620103539.jpg`,
+  `${FOLDER}/IMG20260620103546.jpg`,
+  `${FOLDER}/IMG20260620121255.jpg`,
+  `${FOLDER}/IMG_6704.JPG`,
 ];
+
+export const MONSOON_MATCH_VIDEOS = [
+  `${FOLDER}/Copy%20of%20VID20260620135919.mp4`,
+  `${FOLDER}/IMG_6699.mp4`,
+  `${FOLDER}/IMG_6730.mp4`,
+  `${FOLDER}/IMG_6806.mp4`,
+  `${FOLDER}/IMG_6856.mp4`,
+  `${FOLDER}/IMG_6866.mp4`,
+  `${FOLDER}/IMG_6880.mp4`,
+  `${FOLDER}/IMG_6881.mp4`,
+  `${FOLDER}/IMG_6882.mp4`,
+  `${FOLDER}/IMG_6883.mp4`,
+  `${FOLDER}/IMG_6884.mp4`,
+  `${FOLDER}/IMG_6910.mp4`,
+  `${FOLDER}/VID20260620140048.mp4`,
+  `${FOLDER}/VID20260620140236.mp4`,
+];
+
+export const MONSOON_MATCH_FILES = [...MONSOON_MATCH_PHOTOS, ...MONSOON_MATCH_VIDEOS];
