@@ -1,7 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Cloudflare Workers Builds defaults (`npm run build` then `npx wrangler deploy`)
-  // work because package.json "build" runs OpenNext, which writes .open-next/.
+  // Named opennext.cloudflare.ts (not open-next.config.ts) so Wrangler's
+  // "OpenNext project detected" wrapper does not run on `npx wrangler deploy`.
+  // Cloudflare then deploys `.open-next/worker.js` directly.
   "main": ".open-next/worker.js",
   "name": "forcesportsunited",
   "compatibility_date": "2026-08-19",

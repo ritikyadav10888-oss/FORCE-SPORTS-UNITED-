@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "opennextjs-cloudflare build",
+    "build": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts",
     "build:next": "next build",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "preview": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts && opennextjs-cloudflare preview --openNextConfigPath=opennext.cloudflare.ts",
+    "deploy": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts && opennextjs-cloudflare deploy --openNextConfigPath=opennext.cloudflare.ts",
+    "upload": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts && opennextjs-cloudflare upload --openNextConfigPath=opennext.cloudflare.ts",
     "start": "next start",
     "lint": "next lint"
   },
