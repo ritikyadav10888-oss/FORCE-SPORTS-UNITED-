@@ -1,9 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Cloudflare Workers Builds → Settings → Build:
-  //   Build command:  npx opennextjs-cloudflare build
-  //   Deploy command: npx opennextjs-cloudflare deploy
-  // Do not use `npm run build` (that is only `next build`) or `npx wrangler deploy`.
+  // Cloudflare Workers Builds defaults (`npm run build` then `npx wrangler deploy`)
+  // work because package.json "build" runs OpenNext, which writes .open-next/.
   "main": ".open-next/worker.js",
   "name": "forcesportsunited",
   "compatibility_date": "2026-08-19",
