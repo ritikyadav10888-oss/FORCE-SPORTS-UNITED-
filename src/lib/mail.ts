@@ -1,4 +1,5 @@
 const DEFAULT_TO = "info@forcesportsunited.com";
+const FORMSUBMIT_ID = "742d162f92b3960bb6a779764c47ba81";
 
 type MailAttachment = {
   filename: string;
@@ -91,7 +92,8 @@ async function sendWithSmtp({ subject, html, replyTo, attachments }: SiteEmail, 
 }
 
 async function sendWithFormSubmit({ subject, html, replyTo, attachments }: SiteEmail, toEmail: string) {
-  const endpoint = `https://formsubmit.co/ajax/${encodeURIComponent(toEmail)}`;
+  const formId = (await getSecret("FORMSUBMIT_ID")) || FORMSUBMIT_ID;
+  const endpoint = `https://formsubmit.co/ajax/${formId}`;
   const headers = {
     Accept: "application/json",
     Origin: "https://forcesportsunited.com",
