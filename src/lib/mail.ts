@@ -15,23 +15,7 @@ type SiteEmail = {
   attachments?: MailAttachment[];
 };
 
-function isWorkersRuntime() {
-  const g = globalThis as {
-    EdgeRuntime?: string;
-    WorkerGlobalScope?: unknown;
-    caches?: unknown;
-  };
-  return (
-    (typeof navigator !== "undefined" && navigator.userAgent === "Cloudflare-Workers") ||
-    typeof g.EdgeRuntime !== "undefined" ||
-    typeof g.WorkerGlobalScope !== "undefined"
-  );
-}
-
 async function getSecret(name: string) {
-  const fromProcess = process.env[name];
-  if (fromProcess) return fromProcess;
-
   try {
     const { getCloudflareContext } = await import("@opennextjs/cloudflare");
     const { env } = await getCloudflareContext({ async: true });
@@ -41,7 +25,7 @@ async function getSecret(name: string) {
     // Local Next.js has no Worker bindings.
   }
 
-  return "";
+  return process.env[name] || "";
 }
 
 async function getToEmail() {
@@ -164,7 +148,8 @@ export async function sendSiteEmail(email: SiteEmail) {
     Boolean(await getSecret("SMTP_USER")) &&
     Boolean(await getSecret("SMTP_PASS"));
 
-  if (smtpReady && !isWorkersRuntime()) {
+  // Hostinger SMTP only works in local `next dev`. Cloudflare Workers have no SMTP.
+  if (smtpReady && process.env.NODE_ENV !== "production") {
     try {
       await sendWithSmtp(email, toEmail);
       return;
