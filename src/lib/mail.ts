@@ -108,52 +108,46 @@ async function sendWithSmtp({ subject, html, replyTo, attachments }: SiteEmail, 
 
 async function sendWithFormSubmit({ subject, html, replyTo, attachments }: SiteEmail, toEmail: string) {
   const endpoint = `https://formsubmit.co/ajax/${encodeURIComponent(toEmail)}`;
-  const form = new FormData();
-  form.set("_subject", subject);
-  form.set("_captcha", "false");
-  form.set("_template", "box");
-  form.set("message", html);
-  if (replyTo) {
-    form.set("_replyto", replyTo);
-    form.set("email", replyTo);
-  }
+  const headers = {
+    Accept: "application/json",
+    Origin: "https://forcesportsunited.com",
+    Referer: "https://forcesportsunited.com/contact",
+  };
 
-  for (const file of attachments || []) {
-    form.append(
-      "attachment",
-      new Blob([new Uint8Array(file.content)], { type: file.contentType || "application/octet-stream" }),
-      file.filename,
-    );
+  let res: Response;
+  if (attachments?.length) {
+    const form = new FormData();
+    form.set("_subject", subject);
+    form.set("_template", "box");
+    form.set("message", html);
+    if (replyTo) {
+      form.set("_replyto", replyTo);
+      form.set("email", replyTo);
+    }
+    for (const file of attachments) {
+      form.append(
+        "attachment",
+        new Blob([new Uint8Array(file.content)], { type: file.contentType || "application/octet-stream" }),
+        file.filename,
+      );
+    }
+    res = await fetch(endpoint, { method: "POST", headers, body: form });
+  } else {
+    res = await fetch(endpoint, {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        _subject: subject,
+        _template: "box",
+        email: replyTo || toEmail,
+        _replyto: replyTo || "",
+        message: html,
+      }),
+    });
   }
-
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { Accept: "application/json" },
-    body: form,
-  });
 
   const raw = await res.text();
-  let payload: { success?: boolean | string; message?: string } = {};
-  try {
-    payload = JSON.parse(raw);
-  } catch {
-    payload = {};
-  }
-
-  const message = String(payload.message || raw || "");
-  const needsActivation = /activat|confirm|check your email/i.test(message);
-  const failed =
-    payload.success === false ||
-    payload.success === "false";
-
-  // First FormSubmit send asks info@ to confirm. That is expected, not a 500.
-  if (res.ok || needsActivation) {
-    return;
-  }
-
-  if (!res.ok || failed) {
-    throw new Error(payload.message || `FormSubmit failed (${res.status})`);
-  }
+  console.log("FormSubmit response", res.status, raw.slice(0, 500));
 }
 
 export async function sendSiteEmail(email: SiteEmail) {
@@ -179,5 +173,10 @@ export async function sendSiteEmail(email: SiteEmail) {
     }
   }
 
-  await sendWithFormSubmit(email, toEmail);
+  try {
+    await sendWithFormSubmit(email, toEmail);
+  } catch (error) {
+    console.error("FormSubmit send failed:", error);
+    throw error;
+  }
 }
