@@ -36,6 +36,18 @@ export async function POST(req: Request) {
     await sendSiteEmail({
       replyTo: email,
       subject: `New job application: ${role} — ${name}`,
+      fields: {
+        Name: name,
+        Email: email,
+        Phone: phone || "-",
+        Role: role,
+        Location: location || "-",
+        Experience: experience || "-",
+        LinkedIn: linkedin || "-",
+        Portfolio: portfolio || "-",
+        Resume: attachments ? attachments[0].filename : "Not attached",
+        Message: message || "-",
+      },
       html: brandedEnquiryEmail({
         badge: "Careers",
         title: "New job application",

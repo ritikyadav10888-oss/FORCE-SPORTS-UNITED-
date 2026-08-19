@@ -21,6 +21,18 @@ export async function POST(req: Request) {
     await sendSiteEmail({
       replyTo: email,
       subject: `New quote request from ${name}`,
+      fields: {
+        Name: name,
+        Company: company || "-",
+        Email: email,
+        Phone: phone,
+        "Event type": eventType,
+        Teams: teams || "-",
+        Location: location,
+        Dates: dates,
+        "Add-ons": addOnList,
+        Message: details || "-",
+      },
       html: brandedEnquiryEmail({
         badge: "Quote request",
         title: "New quote request",

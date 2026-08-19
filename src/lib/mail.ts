@@ -14,6 +14,7 @@ type SiteEmail = {
   html: string;
   replyTo?: string;
   attachments?: MailAttachment[];
+  fields?: Record<string, string>;
 };
 
 async function getSecret(name: string) {
@@ -91,7 +92,7 @@ async function sendWithSmtp({ subject, html, replyTo, attachments }: SiteEmail, 
     });
 }
 
-async function sendWithFormSubmit({ subject, html, replyTo, attachments }: SiteEmail, toEmail: string) {
+async function sendWithFormSubmit({ subject, html, replyTo, attachments, fields }: SiteEmail, toEmail: string) {
   const formId = (await getSecret("FORMSUBMIT_ID")) || FORMSUBMIT_ID;
   const endpoint = `https://formsubmit.co/ajax/${formId}`;
   const headers = {
@@ -100,15 +101,25 @@ async function sendWithFormSubmit({ subject, html, replyTo, attachments }: SiteE
     Referer: "https://forcesportsunited.com/contact",
   };
 
+  const payload: Record<string, string> = {
+    _subject: subject,
+    _template: "table",
+    name: fields?.Name || fields?.name || "",
+    email: replyTo || fields?.Email || toEmail,
+    _replyto: replyTo || fields?.Email || "",
+    phone: fields?.Phone || fields?.phone || "",
+    message: fields?.Message || fields?.message || html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(),
+  };
+
+  for (const [key, value] of Object.entries(fields || {})) {
+    if (!payload[key] && value) payload[key] = value;
+  }
+
   let res: Response;
   if (attachments?.length) {
     const form = new FormData();
-    form.set("_subject", subject);
-    form.set("_template", "box");
-    form.set("message", html);
-    if (replyTo) {
-      form.set("_replyto", replyTo);
-      form.set("email", replyTo);
+    for (const [key, value] of Object.entries(payload)) {
+      form.set(key, value);
     }
     for (const file of attachments) {
       form.append(
@@ -122,13 +133,7 @@ async function sendWithFormSubmit({ subject, html, replyTo, attachments }: SiteE
     res = await fetch(endpoint, {
       method: "POST",
       headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        _subject: subject,
-        _template: "box",
-        email: replyTo || toEmail,
-        _replyto: replyTo || "",
-        message: html,
-      }),
+      body: JSON.stringify(payload),
     });
   }
 

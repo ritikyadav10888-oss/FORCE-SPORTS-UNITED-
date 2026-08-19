@@ -18,6 +18,15 @@ export async function POST(req: Request) {
     await sendSiteEmail({
       replyTo: email,
       subject: `New contact enquiry from ${name}`,
+      fields: {
+        Name: name,
+        Company: company || "-",
+        Email: email,
+        Phone: phone || "-",
+        "Event type": eventType || "-",
+        Budget: budget || "-",
+        Message: message,
+      },
       html: brandedEnquiryEmail({
         badge: "Website contact",
         title: "New contact enquiry",
