@@ -12,8 +12,8 @@ import { Trophy, Users, Calendar, Target, ArrowRight, TrendingUp } from "lucide-
 import galleryImages from "@/data/gallery.json";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { R2EventCarousel } from "@/components/R2EventCarousel";
-import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
+import { OPL_ALBUM_NAME, OPL_CARD_IMAGES } from "@/data/opl";
+import { CRCE_ALBUM_NAME, CRCE_CARD_IMAGES } from "@/data/crce";
 import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
 
 const leagues = [
@@ -46,15 +46,14 @@ const impact = [
 const events = [
   {
     albumName: OPL_ALBUM_NAME,
-    r2Folder: OPL_R2_FOLDER,
-    r2Files: OPL_R2_AUCTION_FILES,
+    image: OPL_CARD_IMAGES,
     hasImage: true,
     title: "OPL",
     category: "OCTACREST PREMIER LEAGUE",
     stats: [{ value: "2026", label: "Year" }, { value: "Monsoon", label: "Edition" }, { value: "1", label: "Season" }],
     desc: "Monsoon cricket league featuring franchise-style team auctions and competitive match play.",
   },
-  { albumName: "Fr. CRCE Alumni Sports League", r2Folder: "ASL Fr.CRCE_", r2Files: ["IMG20260606163441.jpg", "IMG_1460.JPG", "DSC_0358.JPG", "IMG_1492.JPG", "IMG_1496.JPG", "IMG_1504.JPG", "IMG20260606222548.jpg"], title: "Fr. CRCE Alumni Sports League", category: "Alumni Event", stats: [{ value: "2026", label: "Year" }, { value: "8", label: "Teams" }, { value: "64", label: "Players" }], desc: "Alumni event bringing together former students for an exciting sports league." },
+  { albumName: CRCE_ALBUM_NAME, image: CRCE_CARD_IMAGES, hasImage: true, title: "Fr. CRCE Alumni Sports League", category: "Alumni Event", stats: [{ value: "2026", label: "Year" }, { value: "8", label: "Teams" }, { value: "64", label: "Players" }], desc: "Alumni event bringing together former students for an exciting sports league." },
   {
     albumName: MONSOON_MATCH_ALBUM_NAME,
     image: MONSOON_MATCH_PHOTOS,

@@ -35,3 +35,7 @@ export const OPL_AUCTION_PHOTOS = [
 ];
 
 export const OPL_R2_AUCTION_FILES = OPL_AUCTION_PHOTOS.map((path) => path.replace(/^\/opl\//, ""));
+
+export const OPL_CARD_IMAGES = OPL_R2_AUCTION_FILES.map(
+  (file) => `https://media.forcesportsunited.com/opl/${file.split("/").map(encodeURIComponent).join("/")}`,
+);

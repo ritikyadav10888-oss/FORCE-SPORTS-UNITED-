@@ -26,12 +26,8 @@ import {
 import Layout from "@/components/Layout";
 import FeaturedEventCard from "@/components/FeaturedEventCard";
 import heroBg from "@/assets/hero-bg.jpg";
-import eventBox from "@/assets/event-boxcricket.jpg";
-import eventCorporate from "@/assets/event-corporate.jpg";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-import { R2EventCarousel } from "@/components/R2EventCarousel";
-import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
+import { OPL_ALBUM_NAME, OPL_CARD_IMAGES } from "@/data/opl";
+import { CRCE_ALBUM_NAME, CRCE_CARD_IMAGES } from "@/data/crce";
 import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
 
 const stats = [
@@ -78,8 +74,7 @@ const verticals = [
 
 const featuredEvents = [
   {
-    r2Folder: OPL_R2_FOLDER,
-    r2Files: OPL_R2_AUCTION_FILES,
+    image: OPL_CARD_IMAGES,
     albumName: OPL_ALBUM_NAME,
     hasImage: true,
     title: "OCTACREST PREMIER LEAGUE (OPL)",
@@ -89,17 +84,8 @@ const featuredEvents = [
     desc: "Monsoon cricket league featuring franchise-style team auctions and competitive match play.",
   },
   {
-    r2Folder: "ASL Fr.CRCE_",
-    r2Files: [
-      "IMG20260606163441.jpg",
-      "IMG_1460.JPG",
-      "DSC_0358.JPG",
-      "IMG_1492.JPG",
-      "IMG_1496.JPG",
-      "IMG_1504.JPG",
-      "IMG20260606222548.jpg"
-    ],
-    albumName: "Fr. CRCE Alumni Sports League",
+    image: CRCE_CARD_IMAGES,
+    albumName: CRCE_ALBUM_NAME,
     hasImage: true,
     title: "FR. CRCE ALUMNI SPORTS LEAGUE",
     titleColor: "text-foreground",

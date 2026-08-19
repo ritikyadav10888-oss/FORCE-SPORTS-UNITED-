@@ -11,6 +11,7 @@ import Image from "next/image";
 import mediaImg from "@/assets/media-production.jpg";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
 import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
+import { CRCE_ALBUM_NAME, CRCE_R2_FILES, CRCE_R2_FOLDER } from "@/data/crce";
 import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_FILES } from "@/data/monsoon-match";
 
 type YouTubeLink = { title: string; url: string };
@@ -36,9 +37,9 @@ const ALBUMS: Album[] = [
   },
   { 
     id: "crce", 
-    name: "Fr. CRCE Alumni Sports League", 
-    r2Folder: "ASL Fr.CRCE_",
-    carouselFiles: ["IMG20260606163441.jpg", "IMG_1460.JPG", "DSC_0358.JPG", "IMG_1492.JPG", "IMG_1496.JPG", "IMG_1504.JPG", "IMG20260606222548.jpg"],
+    name: CRCE_ALBUM_NAME, 
+    r2Folder: CRCE_R2_FOLDER,
+    carouselFiles: CRCE_R2_FILES,
     youtubeLinks: [] as YouTubeLink[],
   },
   {

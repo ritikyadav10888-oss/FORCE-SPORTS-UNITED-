@@ -9,7 +9,12 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 const accountId = process.env.NEXT_PUBLIC_CLOUDFLARE_ACCOUNT_ID;
 const accessKeyId = process.env.NEXT_PUBLIC_R2_ACCESS_KEY_ID;
 const secretAccessKey = process.env.NEXT_PUBLIC_R2_SECRET_ACCESS_KEY;
-const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+const publicUrl = (process.env.NEXT_PUBLIC_R2_PUBLIC_URL || "https://media.forcesportsunited.com").replace(/\/$/, "");
+
+export function r2PublicUrl(key: string) {
+  const encodedKey = key.split("/").map((part) => encodeURIComponent(part)).join("/");
+  return `${publicUrl}/${encodedKey}`;
+}
 
 export const r2Client = new S3Client({
   region: "auto",
@@ -50,12 +55,8 @@ export async function uploadFileToR2(file: File, folder = "assets", fileName?: s
  * @param expiresIn Time in seconds until the link expires (default: 1 hour)
  */
 export async function getFileUrlFromR2(key: string, expiresIn = 3600) {
-  // 1. Prioritize Public CDN / Custom Domain if provided
   if (publicUrl) {
-    const base = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
-    // We encode the key (except for the slashes) to handle spaces in folder names
-    const encodedKey = key.split('/').map(part => encodeURIComponent(part)).join('/');
-    return `${base}/${encodedKey}`;
+    return r2PublicUrl(key);
   }
 
   // 2. Fallback to S3 Presigned URL (slower, expires)
