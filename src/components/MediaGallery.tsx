@@ -89,7 +89,7 @@ function AlbumCover({ folder, alt, specificFiles }: { folder: string; alt: strin
 
   return (
     <img
-      src={coverUrl || mediaImg.src || (mediaImg as any)}
+      src={coverUrl || mediaImg.src}
       alt={alt}
       className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${!coverUrl ? 'opacity-50' : ''}`}
       loading="lazy"
@@ -232,7 +232,7 @@ export default function MediaGallery() {
               ) : album.r2Folder ? (
                 <R2EventCarousel folder={album.r2Folder} files={album.carouselFiles} />
               ) : (
-                <img src={mediaImg.src || (mediaImg as any)} alt={album.name} className="w-full h-full object-cover" />
+                <img src={mediaImg.src} alt={album.name} className="w-full h-full object-cover" />
               )}
             </div>
             <div className="p-5 text-center flex flex-col items-center flex-1">

@@ -21,7 +21,7 @@ const NotFound = () => {
         {/* Background Image with Dark Overlay */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-10 grayscale blur-[2px]"
-          style={{ backgroundImage: `url(${heroBg.src || heroBg})` }}
+          style={{ backgroundImage: `url(${heroBg.src})` }}
         />
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-background via-background/60 to-background" />
 

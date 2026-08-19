@@ -133,7 +133,7 @@ const Index = () => {
     <Layout>
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        <img src={heroBg.src || heroBg} alt="Sports stadium event" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
+        <img src={heroBg.src} alt="Sports stadium event" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-background/75" />
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-in-up">
           <h1 className="font-heading text-[6.5vw] sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-[0.95] mb-6 whitespace-nowrap">

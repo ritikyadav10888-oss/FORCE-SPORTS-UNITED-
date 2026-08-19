@@ -36,7 +36,7 @@ const About = () => (
           </p>
         </div>
         <div className="animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-          <img src={aboutTeam.src || aboutTeam} alt="Force Sports United team coordinating backstage" className="rounded-lg w-full object-cover aspect-[3/2]" loading="lazy" width={1200} height={800} />
+          <img src={aboutTeam.src} alt="Force Sports United team coordinating backstage" className="rounded-lg w-full object-cover aspect-[3/2]" loading="lazy" width={1200} height={800} />
         </div>
       </div>
     </section>

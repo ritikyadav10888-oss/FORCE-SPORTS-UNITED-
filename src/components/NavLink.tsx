@@ -1,24 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { forwardRef } from "react";
+import { forwardRef, type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-interface NavLinkCompatProps extends Omit<NavLinkProps, "className"> {
+type NavLinkProps = ComponentProps<typeof Link> & {
   className?: string;
   activeClassName?: string;
   pendingClassName?: string;
-}
+  to?: string;
+};
 
-const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
-  ({ className, activeClassName, pendingClassName, to, ...props }, ref) => {
+const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
+  ({ className, activeClassName, pendingClassName, to, href, ...props }, ref) => {
     return (
-      <RouterNavLink
+      <Link
         ref={ref}
-        to={to}
-        className={({ isActive, isPending }) =>
-          cn(className, isActive && activeClassName, isPending && pendingClassName)
-        }
+        href={href ?? to ?? "/"}
+        className={cn(className, activeClassName)}
         {...props}
       />
     );

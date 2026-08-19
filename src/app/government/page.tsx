@@ -28,7 +28,7 @@ const Government = () => (
   <Layout>
     {/* Hero */}
     <section className="relative section-padding overflow-hidden">
-      <img src={eventLeague.src || eventLeague} alt="Government sports event" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+      <img src={eventLeague.src} alt="Government sports event" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
       <div className="absolute inset-0 bg-background/80" />
       <div className="relative z-10 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
         <div>

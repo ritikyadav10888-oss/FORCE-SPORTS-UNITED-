@@ -9,7 +9,7 @@ const Media = () => {
     <Layout>
       {/* Hero */}
       <section className="relative section-padding overflow-hidden">
-        <img src={mediaImg.src || (mediaImg as any)} alt="Media production setup" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        <img src={mediaImg.src} alt="Media production setup" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-background/80" />
         <div className="relative z-10 max-w-6xl mx-auto text-center">
           <p className="font-heading text-primary text-sm tracking-[0.3em] uppercase mb-3">Broadcast Quality</p>

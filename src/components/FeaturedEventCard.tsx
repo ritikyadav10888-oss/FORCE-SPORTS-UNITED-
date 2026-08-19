@@ -36,7 +36,7 @@ export default function FeaturedEventCard({ event, className = "" }: FeaturedEve
             <CarouselContent className="h-full ml-0">
               {event.image.map((imgSrc: any, idx: number) => (
                 <CarouselItem key={idx} className="relative h-full pl-0">
-                  <img src={imgSrc.src || imgSrc} alt={`${event.title} slide ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
+                  <img src={typeof imgSrc === "string" ? imgSrc : imgSrc.src} alt={`${event.title} slide ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
                 </CarouselItem>
               ))}
             </CarouselContent>
