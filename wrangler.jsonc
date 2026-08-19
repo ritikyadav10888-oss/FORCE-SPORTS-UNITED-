@@ -8,6 +8,13 @@
   "compatibility_date": "2026-08-19",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": true,
+  "vars": {
+    "NEXT_PUBLIC_R2_PUBLIC_URL": "https://media.forcesportsunited.com",
+    "SMTP_HOST": "smtp.hostinger.com",
+    "SMTP_PORT": "465",
+    "SMTP_USER": "info@forcesportsunited.com",
+    "SMTP_TO": "info@forcesportsunited.com"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
