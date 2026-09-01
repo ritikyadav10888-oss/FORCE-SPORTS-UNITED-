@@ -8,7 +8,7 @@
     "build": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts",
     "build:next": "next build",
     "preview": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts && opennextjs-cloudflare preview --openNextConfigPath=opennext.cloudflare.ts",
-    "deploy": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts && opennextjs-cloudflare deploy --openNextConfigPath=opennext.cloudflare.ts",
+    "deploy": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts && node tools/fix-cf-sockets.mjs && wrangler deploy",
     "upload": "opennextjs-cloudflare build --openNextConfigPath=opennext.cloudflare.ts && opennextjs-cloudflare upload --openNextConfigPath=opennext.cloudflare.ts",
     "start": "next start",
     "lint": "next lint"
@@ -78,6 +78,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.22.4",
     "vaul": "^0.9.9",
+    "worker-mailer": "^1.2.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {

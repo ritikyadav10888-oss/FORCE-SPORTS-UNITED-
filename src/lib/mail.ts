@@ -1,5 +1,4 @@
 const DEFAULT_TO = "info@forcesportsunited.com";
-const FORMSUBMIT_ID = "742d162f92b3960bb6a779764c47ba81";
 
 type MailAttachment = {
   filename: string;
@@ -34,141 +33,86 @@ async function getToEmail() {
   return (await getSecret("SMTP_TO")) || DEFAULT_TO;
 }
 
-export async function isMailConfigured() {
-  return true;
-}
-
-async function sendWithResend({ subject, html, replyTo, attachments }: SiteEmail, apiKey: string, toEmail: string) {
-  const fromAddress =
-    (await getSecret("RESEND_FROM")) || "Force Sports United <onboarding@resend.dev>";
-
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: fromAddress,
-      to: [toEmail],
-      reply_to: replyTo || undefined,
-      subject,
-      html,
-      attachments: attachments?.map((file) => ({
-        filename: file.filename,
-        content: Buffer.from(file.content).toString("base64"),
-      })),
-    }),
-  });
-
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Resend failed (${res.status}): ${detail}`);
-  }
-}
-
-async function sendWithSmtp({ subject, html, replyTo, attachments }: SiteEmail, toEmail: string) {
-  const nodemailer = (await import("nodemailer")).default;
+async function getSmtpConfig() {
   const host = await getSecret("SMTP_HOST");
   const user = await getSecret("SMTP_USER");
   const pass = await getSecret("SMTP_PASS");
   const port = Number((await getSecret("SMTP_PORT")) || 465);
-  const fromAddress = user || toEmail;
-
-  await nodemailer
-    .createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-    })
-    .sendMail({
-      from: `"Force Sports United Website" <${fromAddress}>`,
-      to: toEmail,
-      replyTo,
-      subject,
-      html,
-      attachments,
-    });
+  return { host, user, pass, port };
 }
 
-async function sendWithFormSubmit({ subject, html, replyTo, attachments, fields }: SiteEmail, toEmail: string) {
-  const formId = (await getSecret("FORMSUBMIT_ID")) || FORMSUBMIT_ID;
-  const endpoint = `https://formsubmit.co/ajax/${formId}`;
-  const headers = {
-    Accept: "application/json",
-    Origin: "https://forcesportsunited.com",
-    Referer: "https://forcesportsunited.com/contact",
+export async function isMailConfigured() {
+  const { host, user, pass } = await getSmtpConfig();
+  return Boolean(host && user && pass);
+}
+
+function htmlToText(html: string) {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function toWorkerAttachments(attachments?: MailAttachment[]) {
+  return attachments?.map((file) => ({
+    filename: file.filename,
+    mimeType: file.contentType,
+    content: Buffer.from(file.content).toString("base64"),
+  }));
+}
+
+async function sendWithWorkerSmtp({ subject, html, replyTo, attachments }: SiteEmail, toEmail: string) {
+  const { WorkerMailer } = await import("worker-mailer");
+  const { host, user, pass, port } = await getSmtpConfig();
+  const fromAddress = user || toEmail;
+  const message = {
+    from: { name: "Force Sports United Website", email: fromAddress },
+    to: toEmail,
+    reply: replyTo,
+    subject,
+    text: htmlToText(html),
+    html,
+    attachments: toWorkerAttachments(attachments),
   };
 
-  const payload: Record<string, string> = {
-    _subject: subject,
-    _template: "table",
-    name: fields?.Name || fields?.name || "",
-    email: replyTo || fields?.Email || toEmail,
-    _replyto: replyTo || fields?.Email || "",
-    phone: fields?.Phone || fields?.phone || "",
-    message: fields?.Message || fields?.message || html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(),
-  };
+  const attempts = [
+    { host, port, secure: port === 465, startTls: port !== 465 },
+    { host, port: 587, secure: false, startTls: true },
+  ];
 
-  for (const [key, value] of Object.entries(fields || {})) {
-    if (!payload[key] && value) payload[key] = value;
-  }
-
-  let res: Response;
-  if (attachments?.length) {
-    const form = new FormData();
-    for (const [key, value] of Object.entries(payload)) {
-      form.set(key, value);
-    }
-    for (const file of attachments) {
-      form.append(
-        "attachment",
-        new Blob([new Uint8Array(file.content)], { type: file.contentType || "application/octet-stream" }),
-        file.filename,
+  let lastError: unknown;
+  for (const attempt of attempts) {
+    try {
+      await WorkerMailer.send(
+        {
+          host: attempt.host,
+          port: attempt.port,
+          secure: attempt.secure,
+          startTls: attempt.startTls,
+          credentials: { username: user, password: pass },
+          authType: ["login", "plain"] as Array<"login" | "plain">,
+        },
+        message,
       );
+      return;
+    } catch (error) {
+      lastError = error;
+      console.error(`Hostinger SMTP failed on port ${attempt.port}:`, error);
     }
-    res = await fetch(endpoint, { method: "POST", headers, body: form });
-  } else {
-    res = await fetch(endpoint, {
-      method: "POST",
-      headers: { ...headers, "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
   }
 
-  const raw = await res.text();
-  console.log("FormSubmit response", res.status, raw.slice(0, 500));
+  throw lastError instanceof Error ? lastError : new Error("Hostinger SMTP send failed");
 }
 
 export async function sendSiteEmail(email: SiteEmail) {
-  const toEmail = await getToEmail();
-  const resendKey = await getSecret("RESEND_API_KEY");
+  if (!(await isMailConfigured())) {
+    throw new Error("Hostinger SMTP is not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASS.");
+  }
 
-  if (resendKey) {
-    await sendWithResend(email, resendKey, toEmail);
+  const toEmail = await getToEmail();
+
+  if (process.env.NODE_ENV !== "production") {
+    const { sendWithNodemailer } = await import("./mail-node");
+    await sendWithNodemailer(email, toEmail, await getSmtpConfig());
     return;
   }
 
-  const smtpReady =
-    Boolean(await getSecret("SMTP_HOST")) &&
-    Boolean(await getSecret("SMTP_USER")) &&
-    Boolean(await getSecret("SMTP_PASS"));
-
-  // Hostinger SMTP only works in local `next dev`. Cloudflare Workers have no SMTP.
-  if (smtpReady && process.env.NODE_ENV !== "production") {
-    try {
-      await sendWithSmtp(email, toEmail);
-      return;
-    } catch (error) {
-      console.error("SMTP send failed, falling back to FormSubmit:", error);
-    }
-  }
-
-  try {
-    await sendWithFormSubmit(email, toEmail);
-  } catch (error) {
-    console.error("FormSubmit send failed:", error);
-    throw error;
-  }
+  await sendWithWorkerSmtp(email, toEmail);
 }

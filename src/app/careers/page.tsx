@@ -4,6 +4,7 @@ import { useState } from "react";
 import Layout from "@/components/Layout";
 import { ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { submitWebsiteForm } from "@/lib/submit-website-form";
 
 const Careers = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,11 +16,31 @@ const Careers = () => {
     const form = e.target as HTMLFormElement;
 
     try {
-      const res = await fetch("/api/careers", {
-        method: "POST",
-        body: new FormData(form),
+      const data = new FormData(form);
+      const resume = data.get("resume");
+      await submitWebsiteForm({
+        localApiPath: "/api/careers",
+        localInit: {
+          method: "POST",
+          body: data,
+        },
+        fields: {
+          _subject: `Force Sports United — Job application: ${String(data.get("role") || "")} — ${String(data.get("name") || "")}`,
+          Name: String(data.get("name") || ""),
+          Email: String(data.get("email") || ""),
+          Phone: String(data.get("phone") || ""),
+          Role: String(data.get("role") || ""),
+          Location: String(data.get("location") || ""),
+          Experience: String(data.get("experience") || ""),
+          LinkedIn: String(data.get("linkedin") || ""),
+          Portfolio: String(data.get("portfolio") || ""),
+          Message: String(data.get("message") || ""),
+        },
+        file:
+          resume instanceof File && resume.size > 0
+            ? { field: "attachment", blob: resume, filename: resume.name }
+            : undefined,
       });
-      if (!res.ok) throw new Error("Request failed");
       toast({
         title: "Application Submitted",
         description: "Thank you for applying. We will get back to you shortly.",

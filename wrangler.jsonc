@@ -14,6 +14,7 @@
     "SMTP_PORT": "465",
     "SMTP_USER": "info@forcesportsunited.com",
     "SMTP_TO": "info@forcesportsunited.com"
+    // SMTP_PASS must be an encrypted Worker secret. Never commit it.
   },
   "assets": {
     "directory": ".open-next/assets",

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Layout from "@/components/Layout";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { submitWebsiteForm } from "@/lib/submit-website-form";
 
 const eventTypes = ["Box Cricket", "Cricket League", "Corporate Tournament", "Marathon", "Multi-Sport Event", "Other"];
 
@@ -16,12 +17,24 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      await submitWebsiteForm({
+        localApiPath: "/api/contact",
+        localInit: {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        },
+        fields: {
+          _subject: `Force Sports United — New contact enquiry from ${form.name}`,
+          Name: form.name,
+          Email: form.email,
+          Phone: form.phone,
+          Company: form.company,
+          "Event type": form.eventType,
+          Budget: form.budget,
+          Message: form.message,
+        },
       });
-      if (!res.ok) throw new Error("Request failed");
       toast({ title: "Message sent!", description: "We'll get back to you within 24 hours." });
       setForm({ name: "", company: "", email: "", phone: "", eventType: "", budget: "", message: "" });
     } catch {

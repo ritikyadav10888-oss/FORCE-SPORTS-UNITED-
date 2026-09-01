@@ -10,7 +10,7 @@ const nextConfig = {
       },
     ],
   },
-  serverExternalPackages: ["nodemailer", "sharp"],
+  serverExternalPackages: ["sharp"],
 }
 
 export default nextConfig;

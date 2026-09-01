@@ -31,9 +31,9 @@ import { CRCE_ALBUM_NAME, CRCE_CARD_IMAGES } from "@/data/crce";
 import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
 
 const stats = [
-  { icon: Users, value: "1,500+", label: "Participants" },
+  { icon: Users, value: "2500+", label: "Participants" },
   { icon: Trophy, value: "31+", label: "Leagues" },
-  { icon: Calendar, value: "750+", label: "Games" },
+  { icon: Calendar, value: "2750+", label: "Games" },
   { icon: Zap, value: "8+", label: "Sports" },
 ];
 

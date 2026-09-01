@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
+import { submitWebsiteForm } from "@/lib/submit-website-form";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 const eventTypes = ["Box Cricket", "Cricket League", "Corporate Tournament", "Marathon / Run", "Multi-Sport Event", "Custom Event"];
@@ -28,12 +29,27 @@ const Quote = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/quote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      await submitWebsiteForm({
+        localApiPath: "/api/quote",
+        localInit: {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        },
+        fields: {
+          _subject: `Force Sports United — New quote request from ${form.name}`,
+          Name: form.name,
+          Email: form.email,
+          Phone: form.phone,
+          Company: form.company,
+          "Event type": form.eventType,
+          Teams: form.teams,
+          Location: form.location,
+          Dates: [form.dateStart, form.dateEnd].filter(Boolean).join(" to "),
+          "Add-ons": form.addOns.join(", "),
+          Message: form.details,
+        },
       });
-      if (!res.ok) throw new Error("Request failed");
       toast({ title: "Quote request submitted!", description: "Our team will reach out within 24 hours with a custom proposal." });
       setForm({ name: "", email: "", phone: "", company: "", eventType: "", teams: "", location: "", dateStart: "", dateEnd: "", addOns: [], details: "" });
     } catch {
