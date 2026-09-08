@@ -55,7 +55,7 @@ const Footer = () => {
 
           <div className="flex gap-4 mt-8 text-muted-foreground">
             <a href="https://www.instagram.com/forcesportsunited?igsh=MXdwZ2l3eTN2dmJoZg==" target="_blank" rel="noopener noreferrer" className="bg-[#1a1a1a] p-2.5 rounded-md hover:bg-primary/20 hover:text-primary transition-all duration-300" aria-label="Instagram"><Instagram size={18} /></a>
-            <a href="https://www.linkedin.com/company/force-sports-united/" target="_blank" rel="noopener noreferrer" className="bg-[#1a1a1a] p-2.5 rounded-md hover:bg-primary/20 hover:text-primary transition-all duration-300" aria-label="LinkedIn"><Linkedin size={18} /></a>
+            <a href="https://in.linkedin.com/company/force-sports-united" target="_blank" rel="noopener noreferrer" className="bg-[#1a1a1a] p-2.5 rounded-md hover:bg-primary/20 hover:text-primary transition-all duration-300" aria-label="LinkedIn"><Linkedin size={18} /></a>
             <a href="https://x.com/ForceSportsUtd?s=20" target="_blank" rel="noopener noreferrer" className="bg-[#1a1a1a] p-2.5 rounded-md hover:bg-primary/20 hover:text-primary transition-all duration-300" aria-label="Twitter"><Twitter size={18} /></a>
             <a href="https://www.youtube.com/@ForceSportsUnited" target="_blank" rel="noopener noreferrer" className="bg-[#1a1a1a] p-2.5 rounded-md hover:bg-primary/20 hover:text-primary transition-all duration-300" aria-label="YouTube"><Youtube size={18} /></a>
           </div>
