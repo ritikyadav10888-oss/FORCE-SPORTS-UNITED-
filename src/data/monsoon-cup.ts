@@ -1,0 +1,34 @@
+export const MONSOON_CUP_ALBUM_NAME = "Monsoon Cup";
+export const MONSOON_CUP_R2_FOLDER = "monsoon-cup";
+
+export const MONSOON_CUP_PHOTO_FILES = [
+  "IMGL0193.JPG",
+  "IMGL0198.JPG",
+  "IMGL0201.JPG",
+  "IMGL0204.JPG",
+  "IMGL0205.JPG",
+  "IMGL0206.JPG",
+  "IMGL0209.JPG",
+  "IMGL0210.JPG",
+  "IMGL0217.JPG",
+  "IMGL0225.JPG",
+  "IMGL0227.JPG",
+  "IMGL0229.JPG",
+  "IMGL0240.JPG",
+  "IMGL0241.JPG",
+  "IMGL0255.JPG",
+  "IMGL0259.JPG",
+  "IMGL0448.JPG",
+  "IMGL0451.JPG",
+  "IMGL0456.JPG",
+  "IMGL0482.JPG",
+  "IMGL0761.JPG",
+];
+
+export const MONSOON_CUP_R2_FILES = MONSOON_CUP_PHOTO_FILES;
+
+export const MONSOON_CUP_PHOTOS = MONSOON_CUP_PHOTO_FILES.map(
+  (file) => `https://media.forcesportsunited.com/${MONSOON_CUP_R2_FOLDER}/${encodeURIComponent(file)}`,
+);
+
+export const MONSOON_CUP_CARD_IMAGES = MONSOON_CUP_PHOTOS.slice(0, 4);

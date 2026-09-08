@@ -2,46 +2,17 @@ import Link from "next/link";
 
 import Layout from "@/components/Layout";
 import FeaturedEventCard from "@/components/FeaturedEventCard";
-import portfolio1 from "@/assets/portfolio-1.jpg";
-import portfolio2 from "@/assets/portfolio-2.jpg";
-import portfolio3 from "@/assets/portfolio-3.jpg";
-import eventBox from "@/assets/event-boxcricket.jpg";
-import eventLeague from "@/assets/event-league.jpg";
-import eventCorporate from "@/assets/event-corporate.jpg";
-import { Trophy, Users, Calendar, Target, ArrowRight, TrendingUp } from "lucide-react";
-import galleryImages from "@/data/gallery.json";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+import { ArrowRight } from "lucide-react";
 import { OPL_ALBUM_NAME, OPL_CARD_IMAGES } from "@/data/opl";
 import { CRCE_ALBUM_NAME, CRCE_CARD_IMAGES } from "@/data/crce";
-import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
+import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_CARD_IMAGES } from "@/data/monsoon-match";
+import { WET_WICKET_ALBUM_NAME, WET_WICKET_CARD_IMAGES } from "@/data/wet-wicket";
+import { LPL_ALBUM_NAME, LPL_CARD_IMAGES } from "@/data/lpl";
+import { YPL_ALBUM_NAME, YPL_CARD_IMAGES } from "@/data/ypl";
+import { GPL_ALBUM_NAME, GPL_CARD_IMAGES } from "@/data/gpl";
+import { MONSOON_CUP_ALBUM_NAME, MONSOON_CUP_CARD_IMAGES } from "@/data/monsoon-cup";
 
-const leagues = [
-  {
-    title: "Youth Premier League (YPL)",
-    status: "Season 3 Upcoming",
-    desc: "A franchise-style cricket league for emerging talent. Teams are drafted, branded, and compete in a structured season format with playoffs.",
-    stats: [
-      { label: "Seasons", value: "2" },
-      { label: "Teams", value: "16" },
-      { label: "Players", value: "180+" },
-      { label: "Matches", value: "64" },
-    ],
-  },
-];
-
-const formats = [
-  { icon: Calendar, title: "League Phase", desc: "Round-robin group stage with every team playing 4+ matches." },
-  { icon: Trophy, title: "Playoffs", desc: "Top teams qualify for knockouts — semis and a grand finale." },
-  { icon: Target, title: "Season Format", desc: "Multi-week seasons with scheduled matchdays and rest periods." },
-];
-
-const impact = [
-  { value: "350+", label: "Players Engaged" },
-  { value: "120+", label: "Matches Played" },
-  { value: "25,000+", label: "Community Reach" },
-  { value: "3", label: "Cities" },
-];
+export const dynamic = "force-dynamic";
 
 const events = [
   {
@@ -56,7 +27,7 @@ const events = [
   { albumName: CRCE_ALBUM_NAME, image: CRCE_CARD_IMAGES, hasImage: true, title: "Fr. CRCE Alumni Sports League", category: "Alumni Event", stats: [{ value: "2026", label: "Year" }, { value: "8", label: "Teams" }, { value: "64", label: "Players" }], desc: "Alumni event bringing together former students for an exciting sports league." },
   {
     albumName: MONSOON_MATCH_ALBUM_NAME,
-    image: MONSOON_MATCH_PHOTOS,
+    image: MONSOON_MATCH_CARD_IMAGES.slice(0, 4),
     hasImage: true,
     title: "Monsoon Match",
     category: "MONSOON CRICKET",
@@ -64,21 +35,54 @@ const events = [
     desc: "On-ground monsoon cricket with match photography and video coverage.",
   },
   {
-    albumName: "Gitanjali Narnolia Cricket League 2026",
-    r2Folder: "Gitanjali Narnolia cricket leauge",
+    albumName: GPL_ALBUM_NAME,
+    image: GPL_CARD_IMAGES,
+    hasImage: true,
     title: "GPL",
     category: "CORPORATE LEAGUE",
     stats: [{ value: "120", label: "Players" }, { value: "Mixed", label: "Categories" }, { value: "Corp", label: "Event" }],
-    desc: "Corporate event featuring professional cricket matches and a grand prize distribution."
+    desc: "Corporate event featuring professional cricket matches and a grand prize distribution.",
   },
-  { image: null, title: "LPL", category: "LOKHANDWALA PREMIER LEAGUE", stats: [{ value: "8", label: "Seasons" }, { value: "600+", label: "Players" }, { value: "40+", label: "Societies" }], desc: "Massive community tournament spanning across 40+ residential societies." },
-  { image: eventLeague, title: "YPL", category: "YUVA PREMIER LEAGUE", stats: [{ value: "11", label: "Seasons" }, { value: "750+", label: "Players" }, { value: "3", label: "Sports" }], desc: "Multi-season youth league featuring 3 sports with franchise-style team ownership." },
+  {
+    albumName: LPL_ALBUM_NAME,
+    image: LPL_CARD_IMAGES,
+    hasImage: true,
+    title: "LPL",
+    category: "LOKHANDWALA PREMIER LEAGUE",
+    stats: [{ value: "8", label: "Seasons" }, { value: "600+", label: "Players" }, { value: "40+", label: "Societies" }],
+    desc: "Massive community tournament spanning across 40+ residential societies.",
+  },
+  {
+    albumName: YPL_ALBUM_NAME,
+    image: YPL_CARD_IMAGES,
+    hasImage: true,
+    title: "YPL",
+    category: "YUVA PREMIER LEAGUE",
+    stats: [{ value: "11", label: "Seasons" }, { value: "750+", label: "Players" }, { value: "3", label: "Sports" }],
+    desc: "Multi-season youth league featuring 3 sports with franchise-style team ownership.",
+  },
   { image: null, title: "ASSL", category: "ALL SPORTS SUPER LEAGUE", stats: [{ value: "2", label: "Seasons" }, { value: "180", label: "Players" }, { value: "8", label: "Sports" }], desc: "A thrilling multi-disciplinary super league testing athletes across 8 different sports." },
-  { image: null, title: "WET WICKET", category: "MONSOON CRICKET LEAGUE", stats: [{ value: "8", label: "Teams" }, { value: "16+", label: "Monsoon" }, { value: "1", label: "Sport" }], desc: "Specialty monsoon season cricket tournament designed for wet weather play." },
-  { image: null, title: "MONSOON CUP", category: "KNOCKOUT TOURNAMENT", stats: [{ value: "32", label: "Teams" }, { value: "350+", label: "Players" }, { value: "KO", label: "Format" }], desc: "High-stakes 32-team knockout cup tournament during the monsoon season." },
+  {
+    albumName: WET_WICKET_ALBUM_NAME,
+    image: WET_WICKET_CARD_IMAGES,
+    hasImage: true,
+    title: "WET WICKET",
+    category: "MONSOON CRICKET LEAGUE",
+    stats: [{ value: "8", label: "Teams" }, { value: "16+", label: "Monsoon" }, { value: "1", label: "Sport" }],
+    desc: "Specialty monsoon season cricket tournament designed for wet weather play.",
+  },
+  {
+    albumName: MONSOON_CUP_ALBUM_NAME,
+    image: MONSOON_CUP_CARD_IMAGES,
+    hasImage: true,
+    title: "MONSOON CUP",
+    category: "KNOCKOUT TOURNAMENT",
+    stats: [{ value: "32", label: "Teams" }, { value: "350+", label: "Players" }, { value: "KO", label: "Format" }],
+    desc: "High-stakes 32-team knockout cup tournament during the monsoon season.",
+  },
 ];
 
-const Events = () => {
+export default function EventsPage() {
   return (
     <Layout>
       <section className="bg-secondary section-padding pt-24 pb-12">
@@ -107,6 +111,4 @@ const Events = () => {
       </section>
     </Layout>
   );
-};
-
-export default Events;
+}

@@ -1,0 +1,54 @@
+export const YPL_ALBUM_NAME = "YPL";
+export const YPL_R2_FOLDER = "ypl";
+
+export const YPL_PHOTO_FILES = [
+  "IMG20260403160925.jpg",
+  "IMG20260403160934_01.jpg",
+  "IMG20260403165307.jpg",
+  "IMG20260403175453.jpg",
+  "IMG20260403180158.jpg",
+  "IMG20260404094750.jpg",
+  "IMG20260404094812.jpg",
+  "IMG20260404095315.jpg",
+  "IMG20260404131345.jpg",
+  "IMG20260404131358.jpg",
+  "IMG20260404161949.jpg",
+  "IMG20260404164650.jpg",
+  "IMG20260404200649.jpg",
+  "IMG20260404200735.jpg",
+  "IMG20260404200810.jpg",
+  "IMG20260404201001.jpg",
+  "IMG20260404201112.jpg",
+  "IMG20260405211216.jpg",
+  "IMG20260411095313.jpg",
+  "IMG20260411164118.jpg",
+  "IMG20260412220345.jpg",
+  "IMG20260412224044.jpg",
+  "IMG20260412224132.jpg",
+  "IMG20260412224202.jpg",
+  "IMG20260412224437.jpg",
+];
+
+export const YPL_VIDEO_FILES = [
+  "VID20260412111023.mp4",
+  "VID20260412115618.mp4",
+  "VID20260412175052.mp4",
+  "VID20260412220110.mp4",
+  "VID20260412223146.mp4",
+  "VID20260417201139.mp4",
+  "VID20260419110352.mp4",
+  "VID20260419211135.mp4",
+  "VID20260419225156.mp4",
+];
+
+export const YPL_R2_FILES = [...YPL_PHOTO_FILES, ...YPL_VIDEO_FILES];
+
+export const YPL_PHOTOS = YPL_PHOTO_FILES.map(
+  (file) => `https://media.forcesportsunited.com/${YPL_R2_FOLDER}/${encodeURIComponent(file)}`,
+);
+
+export const YPL_VIDEOS = YPL_VIDEO_FILES.map(
+  (file) => `https://media.forcesportsunited.com/${YPL_R2_FOLDER}/${encodeURIComponent(file)}`,
+);
+
+export const YPL_CARD_IMAGES = YPL_PHOTOS.slice(0, 4);

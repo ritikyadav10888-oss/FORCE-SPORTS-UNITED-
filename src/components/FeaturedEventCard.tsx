@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Trophy } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+import { EventImageCarousel } from "@/components/EventImageCarousel";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
 
 interface FeaturedEventCardProps {
@@ -27,18 +26,7 @@ export default function FeaturedEventCard({ event, className = "" }: FeaturedEve
     >
       <div className="overflow-hidden aspect-[4/3] w-full relative bg-[#1c1311]">
         {event.hasImage && Array.isArray(event.image) ? (
-          <Carousel
-            className="w-full h-full group/carousel"
-            plugins={[Autoplay({ delay: 3000, stopOnInteraction: true })]}
-          >
-            <CarouselContent className="h-full ml-0">
-              {event.image.map((imgSrc: any, idx: number) => (
-                <CarouselItem key={idx} className="relative h-full pl-0">
-                  <img src={typeof imgSrc === "string" ? imgSrc : imgSrc.src} alt={`${event.title} slide ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500" loading="lazy" />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+          <EventImageCarousel images={event.image} alt={event.title} />
         ) : event.r2Folder ? (
           <R2EventCarousel folder={event.r2Folder} files={event.r2Files} />
         ) : event.hasImage && event.image ? (

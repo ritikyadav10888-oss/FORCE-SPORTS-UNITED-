@@ -28,7 +28,8 @@ import FeaturedEventCard from "@/components/FeaturedEventCard";
 import heroBg from "@/assets/hero-bg.jpg";
 import { OPL_ALBUM_NAME, OPL_CARD_IMAGES } from "@/data/opl";
 import { CRCE_ALBUM_NAME, CRCE_CARD_IMAGES } from "@/data/crce";
-import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_PHOTOS } from "@/data/monsoon-match";
+import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_CARD_IMAGES } from "@/data/monsoon-match";
+import { GPL_ALBUM_NAME, GPL_CARD_IMAGES } from "@/data/gpl";
 
 const stats = [
   { icon: Users, value: "2500+", label: "Participants" },
@@ -95,13 +96,23 @@ const featuredEvents = [
   },
   {
     albumName: MONSOON_MATCH_ALBUM_NAME,
-    image: MONSOON_MATCH_PHOTOS,
+    image: MONSOON_MATCH_CARD_IMAGES.slice(0, 4),
     hasImage: true,
     title: "MONSOON MATCH",
     titleColor: "text-foreground",
     category: "MONSOON CRICKET",
     stats: [{ value: "2026", label: "Year" }, { value: "Monsoon", label: "Season" }, { value: "1", label: "Sport" }],
     desc: "On-ground monsoon cricket with match photography and video coverage.",
+  },
+  {
+    albumName: GPL_ALBUM_NAME,
+    image: GPL_CARD_IMAGES,
+    hasImage: true,
+    title: "GPL",
+    titleColor: "text-foreground",
+    category: "CORPORATE LEAGUE",
+    stats: [{ value: "120", label: "Players" }, { value: "Mixed", label: "Categories" }, { value: "Corp", label: "Event" }],
+    desc: "Corporate event featuring professional cricket matches and a grand prize distribution.",
   },
 ];
 
@@ -220,7 +231,7 @@ const Index = () => {
             <h2 className="font-heading text-3xl md:text-5xl font-bold mb-4 uppercase">Our Featured <span className="text-gradient">Events</span></h2>
             <p className="text-muted-foreground max-w-xl mx-auto">Highlights from our recent tournaments and leagues.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredEvents.map((event) => (
               <FeaturedEventCard key={event.title} event={event} />
             ))}

@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Download, Loader2, Play } from "lucide-react";
-import { listFilesInFolder, getFileUrlFromR2 } from "@/lib/r2";
+import { listFilesInFolder, getFileUrlFromR2, r2PublicUrl } from "@/lib/r2";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import { useSearchParams } from "next/navigation";
-import Image from "next/image";
 import mediaImg from "@/assets/media-production.jpg";
 import { R2EventCarousel } from "@/components/R2EventCarousel";
-import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FOLDER } from "@/data/opl";
-import { CRCE_ALBUM_NAME, CRCE_R2_FILES, CRCE_R2_FOLDER } from "@/data/crce";
+import { OPL_ALBUM_NAME, OPL_R2_AUCTION_FILES, OPL_R2_FILES, OPL_R2_FOLDER } from "@/data/opl";
+import { CRCE_ALBUM_NAME, CRCE_CAROUSEL_FILES, CRCE_PHOTOS, CRCE_R2_FILES, CRCE_R2_FOLDER, CRCE_VIDEOS } from "@/data/crce";
 import { MONSOON_MATCH_ALBUM_NAME, MONSOON_MATCH_R2_FILES, MONSOON_MATCH_R2_FOLDER, MONSOON_MATCH_R2_PHOTOS } from "@/data/monsoon-match";
+import { WET_WICKET_ALBUM_NAME, WET_WICKET_CAROUSEL_FILES, WET_WICKET_PHOTOS, WET_WICKET_R2_FILES, WET_WICKET_R2_FOLDER, WET_WICKET_VIDEOS } from "@/data/wet-wicket";
+import { LPL_ALBUM_NAME, LPL_PHOTOS, LPL_R2_FILES, LPL_R2_FOLDER } from "@/data/lpl";
+import { YPL_ALBUM_NAME, YPL_PHOTO_FILES, YPL_PHOTOS, YPL_R2_FILES, YPL_R2_FOLDER, YPL_VIDEOS } from "@/data/ypl";
+import { GPL_ALBUM_NAME, GPL_PHOTOS, GPL_R2_FILES, GPL_R2_FOLDER } from "@/data/gpl";
+import { MONSOON_CUP_ALBUM_NAME, MONSOON_CUP_PHOTOS, MONSOON_CUP_R2_FILES, MONSOON_CUP_R2_FOLDER } from "@/data/monsoon-cup";
 
 type YouTubeLink = { title: string; url: string };
 
@@ -33,13 +35,16 @@ const ALBUMS: Album[] = [
     name: OPL_ALBUM_NAME,
     r2Folder: OPL_R2_FOLDER,
     carouselFiles: OPL_R2_AUCTION_FILES,
+    r2Files: OPL_R2_FILES,
     youtubeLinks: [] as YouTubeLink[],
   },
   { 
     id: "crce", 
     name: CRCE_ALBUM_NAME, 
     r2Folder: CRCE_R2_FOLDER,
-    carouselFiles: CRCE_R2_FILES,
+    carouselFiles: CRCE_CAROUSEL_FILES,
+    r2Files: CRCE_R2_FILES,
+    localFiles: [...CRCE_PHOTOS, ...CRCE_VIDEOS],
     youtubeLinks: [] as YouTubeLink[],
   },
   {
@@ -50,12 +55,51 @@ const ALBUMS: Album[] = [
     r2Files: MONSOON_MATCH_R2_FILES,
     youtubeLinks: [] as YouTubeLink[],
   },
+  {
+    id: "wet-wicket",
+    name: WET_WICKET_ALBUM_NAME,
+    r2Folder: WET_WICKET_R2_FOLDER,
+    carouselFiles: WET_WICKET_CAROUSEL_FILES,
+    r2Files: WET_WICKET_R2_FILES,
+    localFiles: [...WET_WICKET_PHOTOS, ...WET_WICKET_VIDEOS],
+    youtubeLinks: [] as YouTubeLink[],
+  },
+  {
+    id: "lpl",
+    name: LPL_ALBUM_NAME,
+    r2Folder: LPL_R2_FOLDER,
+    carouselFiles: LPL_R2_FILES,
+    r2Files: LPL_R2_FILES,
+    localFiles: LPL_PHOTOS,
+    youtubeLinks: [] as YouTubeLink[],
+  },
+  {
+    id: "ypl",
+    name: YPL_ALBUM_NAME,
+    r2Folder: YPL_R2_FOLDER,
+    carouselFiles: YPL_PHOTO_FILES,
+    r2Files: YPL_R2_FILES,
+    localFiles: [...YPL_PHOTOS, ...YPL_VIDEOS],
+    youtubeLinks: [] as YouTubeLink[],
+  },
   { 
     id: "gitanjali", 
-    name: "Gitanjali Narnolia Cricket League 2026", 
-    r2Folder: "Gitanjali Narnolia cricket leauge", 
+    name: GPL_ALBUM_NAME,
+    r2Folder: GPL_R2_FOLDER,
+    carouselFiles: GPL_R2_FILES,
+    r2Files: GPL_R2_FILES,
+    localFiles: GPL_PHOTOS,
     youtubeLinks: [] as YouTubeLink[],
-  }
+  },
+  {
+    id: "monsoon-cup",
+    name: MONSOON_CUP_ALBUM_NAME,
+    r2Folder: MONSOON_CUP_R2_FOLDER,
+    carouselFiles: MONSOON_CUP_R2_FILES.slice(0, 4),
+    r2Files: MONSOON_CUP_R2_FILES,
+    localFiles: MONSOON_CUP_PHOTOS,
+    youtubeLinks: [] as YouTubeLink[],
+  },
 ];
 
 function getYouTubeId(url: string) {
@@ -130,26 +174,20 @@ export default function MediaGallery() {
     
     async function fetchMedia() {
       setIsLoadingAssets(true);
-      setVisibleCount(24);
+      setVisibleCount(8);
       setVisibleVideoCount(6);
       try {
         let urls: string[] = [];
 
         if (selectedAlbum!.localFiles && selectedAlbum!.localFiles.length > 0) {
           urls = selectedAlbum!.localFiles;
-        } else {
-          let keys: string[] = [];
-          if (selectedAlbum!.r2Files && selectedAlbum!.r2Files.length > 0) {
-            keys = selectedAlbum!.r2Files.map((f) => `${selectedAlbum!.r2Folder}/${f}`);
-          } else if (selectedAlbum!.r2Folder) {
-            keys = await listFilesInFolder(selectedAlbum!.r2Folder);
-          }
-
-          if (!keys.length && selectedAlbum!.carouselFiles?.length && selectedAlbum!.r2Folder) {
-            keys = selectedAlbum!.carouselFiles.map((f) => `${selectedAlbum!.r2Folder}/${f}`);
-          }
-
-          urls = await Promise.all(keys.map(key => getFileUrlFromR2(key)));
+        } else if (selectedAlbum!.r2Files?.length && selectedAlbum!.r2Folder) {
+          urls = selectedAlbum!.r2Files.map((file) => r2PublicUrl(`${selectedAlbum!.r2Folder}/${file}`));
+        } else if (selectedAlbum!.carouselFiles?.length && selectedAlbum!.r2Folder) {
+          urls = selectedAlbum!.carouselFiles.map((file) => r2PublicUrl(`${selectedAlbum!.r2Folder}/${file}`));
+        } else if (selectedAlbum!.r2Folder) {
+          const keys = await listFilesInFolder(selectedAlbum!.r2Folder);
+          urls = keys.map((key) => r2PublicUrl(key));
         }
         
         if (isMounted) {
@@ -212,28 +250,15 @@ export default function MediaGallery() {
           >
             <div className="aspect-[4/3] w-full overflow-hidden relative pointer-events-none">
               {album.localFiles?.length ? (
-                <Carousel
-                  className="w-full h-full"
-                  plugins={[Autoplay({ delay: 3500, stopOnInteraction: true })]}
-                >
-                  <CarouselContent className="h-full ml-0">
-                    {album.localFiles
-                      .filter((src) => !src.toLowerCase().match(/\.(mp4|mov|webm)$/))
-                      .slice(0, 6)
-                      .map((src, idx) => (
-                      <CarouselItem key={idx} className="relative h-full pl-0">
-                        <img
-                          src={src}
-                          alt={`${album.name} slide ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
+                <img
+                  src={album.localFiles.find((src) => !src.toLowerCase().match(/\.(mp4|mov|webm)$/)) || mediaImg.src}
+                  alt={album.name}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
               ) : album.r2Folder ? (
-                <R2EventCarousel folder={album.r2Folder} files={album.carouselFiles} />
+                <R2EventCarousel folder={album.r2Folder} files={album.carouselFiles?.slice(0, 1)} />
               ) : (
                 <img src={mediaImg.src} alt={album.name} className="w-full h-full object-cover" />
               )}
@@ -327,13 +352,13 @@ export default function MediaGallery() {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                   {images.slice(0, visibleCount).map((src, i) => (
                     <div key={i} className="group overflow-hidden rounded-lg bg-secondary border border-border flex flex-col h-full">
-                      <div className="relative aspect-square overflow-hidden w-full bg-black">
-                        <Image src={(src as any).src || src}
+                      <div className="relative aspect-square overflow-hidden w-full bg-secondary">
+                        <img
+                          src={(src as any).src || src}
                           alt={`Gallery ${i + 1}`}
-                          fill
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-                          unoptimized={true}
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="absolute inset-0 h-full w-full object-contain bg-[#141010]"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
                       <div className="p-2 sm:p-3 bg-card border-t border-border flex gap-1.5 sm:gap-2">

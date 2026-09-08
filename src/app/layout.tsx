@@ -121,6 +121,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://media.forcesportsunited.com" />
+        <link rel="dns-prefetch" href="https://media.forcesportsunited.com" />
+      </head>
       <body className="antialiased min-h-screen bg-background text-foreground">
         <script
           type="application/ld+json"

@@ -43,6 +43,9 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
   ({ orientation = "horizontal", opts, setApi, plugins, className, children, ...props }, ref) => {
     const [carouselRef, api] = useEmblaCarousel(
       {
+        loop: true,
+        duration: 48,
+        align: "start",
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
       },

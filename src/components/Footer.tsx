@@ -43,9 +43,9 @@ const Footer = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
         <div>
           <div className="flex items-center gap-2 mb-4" style={{ perspective: "1000px" }}>
-            <img src="/logo.png" alt="Force Sports United Logo" className="h-6 w-6 rounded-full object-cover shadow-sm animate-coin border-2 border-[#F2C94C]" />
+            <img src="/logo.png" alt="Force Sports United Logo" className="h-6 w-6 rounded-full object-contain shadow-sm animate-coin shrink-0" />
             <h3 className="font-heading text-xl font-bold">
-              <span className="bg-gradient-to-b from-[#F2C94C] via-[#F2D675] to-[#B8902E] bg-clip-text text-transparent">FORCE</span> SPORTS UNITED
+              <span className="text-[#f9c837]">FORCE</span> SPORTS UNITED
             </h3>
           </div>
           <p className="text-muted-foreground text-sm leading-relaxed max-w-xs mb-6">

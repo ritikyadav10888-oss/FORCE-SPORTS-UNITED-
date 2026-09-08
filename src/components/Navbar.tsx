@@ -12,11 +12,11 @@ const navLinks = [
   { to: "/corporate", label: "Corporate" },
   { to: "/community", label: "Community" },
   { to: "/government", label: "Government" },
-  { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
 
 const moreLinks = [
+  { to: "/about", label: "About" },
   { to: "/media", label: "Media" },
   { to: "/careers", label: "Careers" },
   { to: "/blog", label: "Blog" },
@@ -28,13 +28,14 @@ const Navbar = () => {
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
+  const moreActive = moreLinks.some((link) => isActive(link.to));
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 lg:px-6 py-3">
         <Link href="/" className="flex items-center gap-2 font-heading text-2xl font-bold tracking-wider shrink-0" style={{ perspective: "1000px" }}>
-          <img src="/logo.png" alt="Force Sports United Logo" className="h-8 w-8 rounded-full object-cover shadow-sm animate-coin border-2 border-[#F2C94C]" />
-          <span className="bg-gradient-to-b from-[#F2C94C] via-[#F2D675] to-[#B8902E] bg-clip-text text-transparent">FORCE</span> SPORTS UNITED
+          <img src="/logo.png" alt="Force Sports United Logo" className="h-8 w-8 rounded-full object-contain shadow-sm animate-coin shrink-0" />
+          <span className="text-[#f9c837]">FORCE</span> SPORTS UNITED
         </Link>
 
         {/* Desktop */}
@@ -56,7 +57,9 @@ const Navbar = () => {
             <button
               onClick={() => setMoreOpen(!moreOpen)}
               onBlur={() => setTimeout(() => setMoreOpen(false), 200)}
-              className="font-heading text-xs tracking-widest uppercase text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+              className={`font-heading text-xs tracking-widest uppercase transition-colors flex items-center gap-1 hover:text-primary ${
+                moreActive ? "text-primary" : "text-muted-foreground"
+              }`}
             >
               More <ChevronDown size={12} />
             </button>
@@ -66,7 +69,9 @@ const Navbar = () => {
                   <Link
                     key={link.to}
                     href={link.to}
-                    className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+                    className={`block px-4 py-2 text-sm hover:text-primary hover:bg-secondary transition-colors ${
+                      isActive(link.to) ? "text-primary" : "text-muted-foreground"
+                    }`}
                   >
                     {link.label}
                   </Link>
