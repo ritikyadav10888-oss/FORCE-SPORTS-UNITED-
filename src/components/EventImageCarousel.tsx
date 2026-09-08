@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 
 const SYNC_EVENT = "force-carousel-sync";
@@ -28,8 +28,7 @@ export function EventImageCarousel({
   images: Array<string | { src: string }>;
   alt: string;
 }) {
-  const slides = images;
-  const firstSrc = slides[0] ? srcOf(slides[0]) : "";
+  const slides = images.map(srcOf).filter(Boolean).slice(0, 6);
   const apiRef = useRef<CarouselApi>(null);
 
   useEffect(() => {
@@ -37,39 +36,36 @@ export function EventImageCarousel({
     const onTick = (event: Event) => {
       const api = apiRef.current;
       if (!api || slides.length < 2) return;
-      const next = (event as CustomEvent<number>).detail % slides.length;
-      api.scrollTo(next);
+      api.scrollTo((event as CustomEvent<number>).detail % slides.length);
     };
     window.addEventListener(SYNC_EVENT, onTick);
     return () => window.removeEventListener(SYNC_EVENT, onTick);
   }, [slides.length]);
 
-  if (!firstSrc) return null;
+  if (slides.length === 0) return null;
 
   return (
-    <div className="absolute inset-0">
-      <Carousel
-        className="absolute inset-0 h-full w-full"
-        opts={{ loop: slides.length > 1, duration: 32, startIndex: 0 }}
-        setApi={(api) => {
-          apiRef.current = api;
-        }}
-      >
-        <CarouselContent className="h-full ml-0">
-          {slides.map((imgSrc, idx) => (
-            <CarouselItem key={srcOf(imgSrc)} className="relative h-full min-h-full pl-0">
-              <img
-                src={srcOf(imgSrc)}
-                alt={`${alt} slide ${idx + 1}`}
-                className="absolute inset-0 h-full w-full object-cover"
-                loading={idx === 0 ? "eager" : "lazy"}
-                fetchPriority={idx === 0 ? "high" : "low"}
-                decoding="async"
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    </div>
+    <Carousel
+      className="absolute inset-0 h-full w-full"
+      opts={{ loop: slides.length > 1, duration: 28, align: "start" }}
+      setApi={(api) => {
+        apiRef.current = api;
+      }}
+    >
+      <CarouselContent className="ml-0 h-full">
+        {slides.map((src, idx) => (
+          <CarouselItem key={src} className="h-full min-h-0 basis-full pl-0">
+            <img
+              src={src}
+              alt={`${alt} slide ${idx + 1}`}
+              className="h-full w-full object-cover"
+              loading={idx === 0 ? "eager" : "lazy"}
+              fetchPriority={idx === 0 ? "high" : "low"}
+              decoding="async"
+            />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
   );
 }

@@ -6,7 +6,7 @@ import { EventImageCarousel } from "@/components/EventImageCarousel";
 export function R2EventCarousel({ folder, files }: { folder: string; files?: string[] }) {
   const photos = (files || [])
     .filter((file) => !/\.(mp4|mov|webm)$/i.test(file))
-    .slice(0, 4)
+    .slice(0, 6)
     .map((file) => r2PublicUrl(`${folder}/${file}`));
 
   if (photos.length === 0) {

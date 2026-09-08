@@ -25,10 +25,10 @@ export default function FeaturedEventCard({ event, className = "" }: FeaturedEve
       className={`@container bg-card border border-border rounded-lg overflow-hidden hover:border-primary transition-colors group flex flex-col min-w-0 ${event.albumName ? 'cursor-pointer' : ''} ${className}`}
     >
       <div className="overflow-hidden aspect-[4/3] w-full relative bg-[#1c1311]">
-        {event.hasImage && Array.isArray(event.image) ? (
-          <EventImageCarousel images={event.image} alt={event.title} />
-        ) : event.r2Folder ? (
+        {event.r2Folder ? (
           <R2EventCarousel folder={event.r2Folder} files={event.r2Files} />
+        ) : event.hasImage && Array.isArray(event.image) ? (
+          <EventImageCarousel images={event.image} alt={event.title} />
         ) : event.hasImage && event.image ? (
           <img src={(event.image as any)?.src || event.image as string} alt={event.title} className={`w-full h-full group-hover:scale-105 transition-transform duration-500 ${(event as any).containImage ? "object-contain bg-white p-2" : "object-cover"}`} loading="lazy" width={800} height={600} />
         ) : (

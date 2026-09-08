@@ -11,6 +11,7 @@ import { LPL_ALBUM_NAME, LPL_CARD_IMAGES } from "@/data/lpl";
 import { YPL_ALBUM_NAME, YPL_CARD_IMAGES } from "@/data/ypl";
 import { GPL_ALBUM_NAME, GPL_CARD_IMAGES } from "@/data/gpl";
 import { MONSOON_CUP_ALBUM_NAME, MONSOON_CUP_CARD_IMAGES } from "@/data/monsoon-cup";
+import { ASSL_ALBUM_NAME, ASSL_CAROUSEL_FILES, ASSL_R2_FOLDER } from "@/data/assl";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,15 @@ const events = [
     stats: [{ value: "11", label: "Seasons" }, { value: "750+", label: "Players" }, { value: "3", label: "Sports" }],
     desc: "Multi-season youth league featuring 3 sports with franchise-style team ownership.",
   },
-  { image: null, title: "ASSL", category: "ALL SPORTS SUPER LEAGUE", stats: [{ value: "2", label: "Seasons" }, { value: "180", label: "Players" }, { value: "8", label: "Sports" }], desc: "A thrilling multi-disciplinary super league testing athletes across 8 different sports." },
+  {
+    albumName: ASSL_ALBUM_NAME,
+    r2Folder: ASSL_R2_FOLDER,
+    r2Files: ASSL_CAROUSEL_FILES,
+    title: "ASSL",
+    category: "ALL SPORTS SUPER LEAGUE",
+    stats: [{ value: "2", label: "Seasons" }, { value: "180", label: "Players" }, { value: "8", label: "Sports" }],
+    desc: "A thrilling multi-disciplinary super league testing athletes across 8 different sports.",
+  },
   {
     albumName: WET_WICKET_ALBUM_NAME,
     image: WET_WICKET_CARD_IMAGES,

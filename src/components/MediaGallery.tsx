@@ -15,6 +15,7 @@ import { LPL_ALBUM_NAME, LPL_PHOTOS, LPL_R2_FILES, LPL_R2_FOLDER } from "@/data/
 import { YPL_ALBUM_NAME, YPL_PHOTO_FILES, YPL_PHOTOS, YPL_R2_FILES, YPL_R2_FOLDER, YPL_VIDEOS } from "@/data/ypl";
 import { GPL_ALBUM_NAME, GPL_PHOTOS, GPL_R2_FILES, GPL_R2_FOLDER } from "@/data/gpl";
 import { MONSOON_CUP_ALBUM_NAME, MONSOON_CUP_PHOTOS, MONSOON_CUP_R2_FILES, MONSOON_CUP_R2_FOLDER } from "@/data/monsoon-cup";
+import { ASSL_ALBUM_NAME, ASSL_CAROUSEL_FILES, ASSL_R2_FILES, ASSL_R2_FOLDER } from "@/data/assl";
 
 type YouTubeLink = { title: string; url: string };
 
@@ -100,6 +101,14 @@ const ALBUMS: Album[] = [
     localFiles: MONSOON_CUP_PHOTOS,
     youtubeLinks: [] as YouTubeLink[],
   },
+  {
+    id: "assl",
+    name: ASSL_ALBUM_NAME,
+    r2Folder: ASSL_R2_FOLDER,
+    carouselFiles: ASSL_CAROUSEL_FILES,
+    r2Files: ASSL_R2_FILES,
+    youtubeLinks: [] as YouTubeLink[],
+  },
 ];
 
 function getYouTubeId(url: string) {
@@ -179,15 +188,15 @@ export default function MediaGallery() {
       try {
         let urls: string[] = [];
 
-        if (selectedAlbum!.localFiles && selectedAlbum!.localFiles.length > 0) {
-          urls = selectedAlbum!.localFiles;
-        } else if (selectedAlbum!.r2Files?.length && selectedAlbum!.r2Folder) {
+        if (selectedAlbum!.r2Files?.length && selectedAlbum!.r2Folder) {
           urls = selectedAlbum!.r2Files.map((file) => r2PublicUrl(`${selectedAlbum!.r2Folder}/${file}`));
         } else if (selectedAlbum!.carouselFiles?.length && selectedAlbum!.r2Folder) {
           urls = selectedAlbum!.carouselFiles.map((file) => r2PublicUrl(`${selectedAlbum!.r2Folder}/${file}`));
         } else if (selectedAlbum!.r2Folder) {
           const keys = await listFilesInFolder(selectedAlbum!.r2Folder);
           urls = keys.map((key) => r2PublicUrl(key));
+        } else if (selectedAlbum!.localFiles && selectedAlbum!.localFiles.length > 0) {
+          urls = selectedAlbum!.localFiles;
         }
         
         if (isMounted) {
@@ -249,18 +258,16 @@ export default function MediaGallery() {
             onClick={() => setSelectedAlbum(album)}
           >
             <div className="aspect-[4/3] w-full overflow-hidden relative pointer-events-none">
-              {album.localFiles?.length ? (
+              {album.r2Folder ? (
+                <R2EventCarousel folder={album.r2Folder} files={album.carouselFiles} />
+              ) : (
                 <img
-                  src={album.localFiles.find((src) => !src.toLowerCase().match(/\.(mp4|mov|webm)$/)) || mediaImg.src}
+                  src={album.localFiles?.find((src) => !src.toLowerCase().match(/\.(mp4|mov|webm)$/)) || mediaImg.src}
                   alt={album.name}
                   className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"
                 />
-              ) : album.r2Folder ? (
-                <R2EventCarousel folder={album.r2Folder} files={album.carouselFiles?.slice(0, 1)} />
-              ) : (
-                <img src={mediaImg.src} alt={album.name} className="w-full h-full object-cover" />
               )}
             </div>
             <div className="p-5 text-center flex flex-col items-center flex-1">
