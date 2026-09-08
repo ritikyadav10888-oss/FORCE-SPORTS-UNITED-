@@ -97,12 +97,27 @@ const Navbar = () => {
       {/* Mobile menu */}
       {open && (
         <div className="lg:hidden bg-background border-b border-border px-6 pb-6 space-y-3 max-h-[80vh] overflow-y-auto">
-          {[...navLinks, ...moreLinks].map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.to}
               href={link.to}
               onClick={() => setOpen(false)}
               className={`block font-heading text-sm tracking-widest uppercase transition-colors hover:text-primary ${
+                isActive(link.to) ? "text-primary" : "text-muted-foreground"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <p className={`font-heading text-sm tracking-widest uppercase pt-2 ${moreActive ? "text-primary" : "text-muted-foreground"}`}>
+            More
+          </p>
+          {moreLinks.map((link) => (
+            <Link
+              key={link.to}
+              href={link.to}
+              onClick={() => setOpen(false)}
+              className={`block pl-4 font-heading text-sm tracking-widest uppercase transition-colors hover:text-primary ${
                 isActive(link.to) ? "text-primary" : "text-muted-foreground"
               }`}
             >

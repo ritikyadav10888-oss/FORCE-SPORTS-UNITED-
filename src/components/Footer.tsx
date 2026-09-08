@@ -8,10 +8,8 @@ const footerSections = [
   {
     title: "COMPANY",
     links: [
-      { to: "/about", label: "About Force Sports United" },
       { to: "/services", label: "Services" },
       { to: "/events", label: "Events" },
-      { to: "/careers", label: "Careers" },
     ],
   },
   {
@@ -20,12 +18,14 @@ const footerSections = [
       { to: "/corporate", label: "Corporate Solutions" },
       { to: "/community", label: "Community Sports" },
       { to: "/government", label: "Government Events" },
-      { to: "/media", label: "Media & Production" },
     ],
   },
   {
-    title: "RESOURCES",
+    title: "MORE",
     links: [
+      { to: "/about", label: "About Force Sports United" },
+      { to: "/media", label: "Media & Production" },
+      { to: "/careers", label: "Careers" },
       { to: "/blog", label: "Blog & Insights" },
       { to: "/quote", label: "Get a Quote" },
       { to: "/contact", label: "Contact Us" },
